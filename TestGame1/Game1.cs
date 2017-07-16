@@ -20,8 +20,6 @@ namespace TestGame1
         //WorldGen mWorldGen;
         World mWorld;
 
-        //Ship mShip;        
-
         // Keyboard states used to determine key presses
         KeyboardState currentKeyboardState;
         KeyboardState previousKeyboardState;
@@ -93,13 +91,10 @@ namespace TestGame1
 
             LoadImage("test_village");
             LoadImage("arrow");
-            LoadImage("dodonpachi_gas13");
 
             mWorld.LoadContent(GraphicsDevice, mTextureAtlas);
             //mWorldGen.LoadContent(GraphicsDevice, mTextureAtlas);
 
-            // TODO: use this.Content to load your game content here
-            //mShip.SetTexture(mTextureAtlas["dodonpachi_gas13"]);
         }
 
         /// <summary>
@@ -121,7 +116,7 @@ namespace TestGame1
             // Read the current state of the keyboard and gamepad and store it
             currentKeyboardState = Keyboard.GetState();
             currentGamePadState = GamePad.GetState(PlayerIndex.One);
-                  
+
             if (currentGamePadState.Buttons.Back == ButtonState.Pressed || currentKeyboardState.IsKeyDown(Keys.Escape))
             {
                 Exit();
@@ -131,7 +126,6 @@ namespace TestGame1
             //
             if (currentGamePadState.IsConnected)
             {
-                //mShip.ProcessInputVector(currentGamePadState.ThumbSticks.Left);
             }
 
             // Process keyboard
@@ -159,7 +153,6 @@ namespace TestGame1
                 {
                 }
 
-                //mShip.ProcessInputVector(keyVec);
             }
 
 
@@ -182,15 +175,10 @@ namespace TestGame1
             mSpriteBatch.Begin(
                 SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, null);
 
-
-            //System.Console.WriteLine(min);
-            //System.Console.WriteLine(max);
-            //mShip.Draw(spriteBatch, gameTime);
             //mWorldGen.Draw(gameTime, mSpriteBatch);
             mWorld.Draw(gameTime, mSpriteBatch);
 
             mSpriteBatch.End();
-            // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }

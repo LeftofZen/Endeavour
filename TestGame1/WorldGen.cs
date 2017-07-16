@@ -96,10 +96,10 @@ namespace TestGame1
 
             // draw game world
             DrawWorldToTexture();
-            
+
         }
 
-        
+
 
         public void ProcessInput()
         {
@@ -113,9 +113,9 @@ namespace TestGame1
             //mWorld[(int)mGridCentre.X, (int)mGridCentre.Y].water = 1f;
 
             // don't look at outside boundary tiles
-            for (int y = 1; y < mGridHeight-1; y++)
+            for (int y = 1; y < mGridHeight - 1; y++)
             {
-                for (int x = 1; x < mGridWidth-1; x++)
+                for (int x = 1; x < mGridWidth - 1; x++)
                 {
                     // find lowest tile compared to this one
                     //Tile thisTile = mWorld[x, y];
@@ -123,7 +123,7 @@ namespace TestGame1
                     //    thisTile.water = 0f;
                     //else
                     //    thisTile.water = 0.9f;
-                    
+
                 }
 
             }
@@ -168,7 +168,7 @@ namespace TestGame1
 
             // add a water source
             mWorld[(int)mGridCentre.X, (int)mGridCentre.Y].water = 1f;
-            
+
             for (int y = 1; y < mGridHeight - 1; y++)
             {
                 for (int x = 1; x < mGridWidth - 1; x++)
@@ -182,7 +182,7 @@ namespace TestGame1
                     float water = thisTile.water / 4f;
 
                     // up
-                    if (thisTile.mGradient.Y >= 1* Math.PI / 4 && thisTile.mGradient.Y < 3 * Math.PI / 4)
+                    if (thisTile.mGradient.Y >= 1 * Math.PI / 4 && thisTile.mGradient.Y < 3 * Math.PI / 4)
                     {
                         mWorldBackBuffer[x - 1, y].water += water;
                         thisTile.water -= water;
@@ -207,7 +207,7 @@ namespace TestGame1
                     }
                 }
             }
-            
+
             // switch buffers
             mWorld = mWorldBackBuffer;
         }
@@ -448,7 +448,7 @@ namespace TestGame1
                         noise = (int)noise;
                         noise /= mQuantisationLevel;
                     }
-                    
+
 
                     // cull anything below a certain level
                     if (noise < mCullLevel)
