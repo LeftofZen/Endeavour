@@ -21,19 +21,8 @@ namespace TestGame1
         World mWorld;
 
         // Keyboard states used to determine key presses
-        KeyboardState currentKeyboardState;
-        KeyboardState previousKeyboardState;
-
-        // Gamepad states used to determine button presses
-        GamePadState currentGamePadState;
-        GamePadState previousGamePadState;
-
-        //Mouse states used to track Mouse button press
-        MouseState currentMouseState;
-        MouseState previousMouseState;
-
-        Vector2 keyVec;
-
+        InputState mInputState;
+        
         public Game1()
         {
             mGraphics = new GraphicsDeviceManager(this);
@@ -42,22 +31,12 @@ namespace TestGame1
             mGraphics.PreferredBackBufferHeight = 810;
 
             mTextureAtlas = new Dictionary<string, Texture2D>();
+            mInputState = new InputState();
 
             this.IsMouseVisible = true;
 
             Content.RootDirectory = "Content";
 
-            //mShip = new Ship();
-            keyVec = new Vector2();
-
-            currentMouseState = new MouseState();
-            previousMouseState = currentMouseState;
-
-            currentKeyboardState = new KeyboardState();
-            previousKeyboardState = currentKeyboardState;
-
-            currentGamePadState = new GamePadState();
-            previousGamePadState = currentGamePadState;
         }
 
         /// <summary>
@@ -114,51 +93,37 @@ namespace TestGame1
         protected override void Update(GameTime gameTime)
         {
             // Read the current state of the keyboard and gamepad and store it
-            currentKeyboardState = Keyboard.GetState();
-            currentGamePadState = GamePad.GetState(PlayerIndex.One);
+            mInputState.Update(gameTime);
 
-            if (currentGamePadState.Buttons.Back == ButtonState.Pressed || currentKeyboardState.IsKeyDown(Keys.Escape))
+
+
+            if (   mInputState.mCurrentGamePadState.Buttons.Back == ButtonState.Pressed
+                || mInputState.mCurrentKeyboardState.IsKeyDown(Keys.Escape))
             {
                 Exit();
             }
 
             // Update state here
             //
-            if (currentGamePadState.IsConnected)
-            {
-            }
+            //if (currentGamePadState.IsConnected)
+            { }
 
             // Process keyboard
+            { }
+
+            // Process mouse
+            { }
+
+            //mWorldGen.ProcessInput();
+            mWorld.ProcessInput(mInputState);
+
+
+            if (!mInputState.mCurrentKeyboardState.IsKeyDown(Keys.Space) && mInputState.mPreviousKeyboardState.IsKeyDown(Keys.Space))
             {
-
-                if (currentKeyboardState.IsKeyDown(Keys.Left))
-                {
-                    keyVec.X -= 1;
-                }
-                if (currentKeyboardState.IsKeyDown(Keys.Right))
-                {
-                    keyVec.X += 1;
-                }
-                if (currentKeyboardState.IsKeyDown(Keys.Up))
-                {
-                    keyVec.Y -= 1;
-                }
-                if (currentKeyboardState.IsKeyDown(Keys.Down))
-                {
-                    keyVec.Y += 1;
-                }
-
-                //mWorldGen.ProcessInput();
-                if (!currentKeyboardState.IsKeyDown(Keys.Space) && previousKeyboardState.IsKeyDown(Keys.Space))
-                {
-                }
-
             }
 
 
-            // Save the previous state of the keyboard and game pad so we can determine single key/button presses
-            previousGamePadState = currentGamePadState;
-            previousKeyboardState = currentKeyboardState;
+            mInputState.UpdatePrevious();
 
             base.Update(gameTime);
         }
