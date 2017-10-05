@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace TestGame1
+namespace Endeavour
 {
     public class InputState
     {

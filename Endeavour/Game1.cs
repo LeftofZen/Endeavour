@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 
-namespace TestGame1
+namespace Endeavour
 {
     /// <summary>
     /// This is the main type for your game.
@@ -18,7 +18,9 @@ namespace TestGame1
         Dictionary<String, Texture2D> mTextureAtlas;
 
         //WorldGen mWorldGen;
-        World mWorld;
+        //World mWorld;
+
+        Render mRender;
 
         // Keyboard states used to determine key presses
         InputState mInputState;
@@ -34,8 +36,12 @@ namespace TestGame1
             mInputState = new InputState();
 
             this.IsMouseVisible = true;
+            
 
             Content.RootDirectory = "Content";
+
+            // enable this when we upgrade to monogame 3.6+
+            //Components.Add(new FrameRateCounter(this));
 
         }
 
@@ -49,7 +55,10 @@ namespace TestGame1
         {
             // TODO: Add your initialization logic here
             //mWorldGen = new WorldGen();
-            mWorld = new World();
+            //mWorld = new World();
+
+            mRender = new Render(this);
+            mRender.Initialize(mGraphics);
 
             base.Initialize();
         }
@@ -71,8 +80,10 @@ namespace TestGame1
             LoadImage("test_village");
             LoadImage("arrow");
 
-            mWorld.LoadContent(GraphicsDevice, mTextureAtlas);
+
+            //mWorld.LoadContent(GraphicsDevice, mTextureAtlas);
             //mWorldGen.LoadContent(GraphicsDevice, mTextureAtlas);
+            mRender.LoadContent(mTextureAtlas);
 
         }
 
@@ -115,8 +126,9 @@ namespace TestGame1
             { }
 
             //mWorldGen.ProcessInput();
-            mWorld.ProcessInput(mInputState);
-
+            //mWorld.ProcessInput(mInputState);
+            mRender.Update(gameTime);
+            mRender.ProcessInput(mInputState);
 
             if (!mInputState.mCurrentKeyboardState.IsKeyDown(Keys.Space) && mInputState.mPreviousKeyboardState.IsKeyDown(Keys.Space))
             {
@@ -141,7 +153,8 @@ namespace TestGame1
                 SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, null);
 
             //mWorldGen.Draw(gameTime, mSpriteBatch);
-            mWorld.Draw(gameTime, mSpriteBatch);
+            //mWorld.Draw(gameTime, mSpriteBatch);
+            mRender.Draw(gameTime);
 
             mSpriteBatch.End();
 

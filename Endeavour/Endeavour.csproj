@@ -8,8 +8,8 @@
     <ProjectGuid>{74461BC9-67ED-4D96-B225-F8F43A3667EE}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestGame1</RootNamespace>
-    <AssemblyName>TestGame1</AssemblyName>
+    <RootNamespace>Endeavour</RootNamespace>
+    <AssemblyName>Endeavour</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>WindowsGL</MonoGamePlatform>
     <MonoGameContentBuilderExe>
@@ -43,8 +43,14 @@
   <PropertyGroup>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Endeavour.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
+    <Compile Include="FrameRateCounter.cs" />
+    <Compile Include="Render.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="GOAP.cs" />
     <Compile Include="InputState.cs" />
     <Compile Include="OpenSimplex.cs" />
     <Compile Include="Program.cs" />
@@ -85,6 +91,9 @@
       <Project>{1531c1ea-bd53-41d1-a34b-cfcdf79d2651}</Project>
       <Name>Priority Queue</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\Fonts\" />
   </ItemGroup>
   <!-- Specify the search path explicitly so the ResolveAssemblyReferences task picks the right ones -->
   <Target Name="BeforeResolveReferences">

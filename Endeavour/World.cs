@@ -5,7 +5,7 @@ using Priority_Queue;
 using System;
 using System.Collections.Generic;
 
-namespace TestGame1
+namespace Endeavour
 {
     enum TileContent
     { Grass, Road, Villge, Water, Lake, Forest, Farm, Paddock, Mine, Shop };

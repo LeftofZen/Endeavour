@@ -14,7 +14,7 @@
  *   will be the same when ported to other languages.
  */
 
-namespace TestGame1
+namespace Endeavour
 {
     public class OpenSimplexNoise
     {
