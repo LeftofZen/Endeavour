@@ -40,9 +40,9 @@ namespace ConsoleApp1
 			{
 				for (int x = 0; x < imEncoded.Width; ++x)
 				{
-					Color c1 = imEncoded.GetPixel(x, y);					
+					Color c1 = imEncoded.GetPixel(x, y);
 
-					uint reverseMask = ~mask;		
+					uint reverseMask = ~mask;
 					uint c2 = ((uint)c1.ToArgb() & reverseMask);
 					Color c3 = Color.FromArgb((int)c2);
 					imDecoded.SetPixel(x, y, c3);

@@ -100,12 +100,13 @@ namespace ConsoleApp1
 				mGraphics.DrawLine(p1, l.A, l.B);
 			}
 
-			intersections.Sort((lineA, lineB) => {
+			intersections.Sort((lineA, lineB) =>
+			{
 				int distA = DistancePointToLine(lineA, mPlayer);
 				int distB = DistancePointToLine(lineB, mPlayer);
 
 				return distA.CompareTo(distB);
-			} );
+			});
 
 
 			bool first = true;
@@ -121,7 +122,7 @@ namespace ConsoleApp1
 					mGraphics.DrawLine(p3, l.A, l.B);
 				}
 			}
-			
+
 
 			// player
 			int playerSize = 20;
@@ -175,14 +176,14 @@ namespace ConsoleApp1
 		{
 			var a = line.B.X - line.A.X;
 			var b = line.B.Y - line.A.Y;
-			var t = (a * (p0.X - line.A.X) + b * (p0.Y - line.A.Y)) / (a*a + b*b);
+			var t = (a * (p0.X - line.A.X) + b * (p0.Y - line.A.Y)) / (a * a + b * b);
 
 			if (t > 1)
 				return line.B;
 			else if (t < 0)
 				return line.A;
 			else
-				return new Point((line.A.X + t*a), (line.A.Y + t*b));
+				return new Point((line.A.X + t * a), (line.A.Y + t * b));
 		}
 
 		int DistancePointToLine(Line2D line, Point p0)
