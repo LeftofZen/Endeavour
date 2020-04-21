@@ -90,7 +90,7 @@ namespace Endeavour
             this.perm = perm;
             permGradIndex3D = new short[256];
 
-            for (int i = 0; i < 256; i++)
+            for (var i = 0; i < 256; i++)
             {
                 //Since 3D has 24 gradients, simple bitmask won't work, so precompute modulo array.
                 permGradIndex3D[i] = (short)((perm[i] % (gradients3D.Length / 3)) * 3);
@@ -104,19 +104,25 @@ namespace Endeavour
         {
             perm = new short[256];
             permGradIndex3D = new short[256];
-            short[] source = new short[256];
+            var source = new short[256];
             for (short i = 0; i < 256; i++)
-                source[i] = i;
+			{
+				source[i] = i;
+			}
+
+			seed = seed * 6364136223846793005L + 1442695040888963407L;
             seed = seed * 6364136223846793005L + 1442695040888963407L;
             seed = seed * 6364136223846793005L + 1442695040888963407L;
-            seed = seed * 6364136223846793005L + 1442695040888963407L;
-            for (int i = 255; i >= 0; i--)
+            for (var i = 255; i >= 0; i--)
             {
                 seed = seed * 6364136223846793005L + 1442695040888963407L;
-                int r = (int)((seed + 31) % (i + 1));
+                var r = (int)((seed + 31) % (i + 1));
                 if (r < 0)
-                    r += (i + 1);
-                perm[i] = source[r];
+				{
+					r += (i + 1);
+				}
+
+				perm[i] = source[r];
                 permGradIndex3D[i] = (short)((perm[i] % (gradients3D.Length / 3)) * 3);
                 source[r] = source[i];
             }
@@ -126,29 +132,29 @@ namespace Endeavour
         public double eval(double x, double y)
         {
             //Place input coordinates onto grid.
-            double stretchOffset = (x + y) * STRETCH_CONSTANT_2D;
-            double xs = x + stretchOffset;
-            double ys = y + stretchOffset;
+            var stretchOffset = (x + y) * STRETCH_CONSTANT_2D;
+            var xs = x + stretchOffset;
+            var ys = y + stretchOffset;
 
             //Floor to get grid coordinates of rhombus (stretched square) super-cell origin.
-            int xsb = fastFloor(xs);
-            int ysb = fastFloor(ys);
+            var xsb = fastFloor(xs);
+            var ysb = fastFloor(ys);
 
             //Skew out to get actual coordinates of rhombus origin. We'll need these later.
-            double squishOffset = (xsb + ysb) * SQUISH_CONSTANT_2D;
-            double xb = xsb + squishOffset;
-            double yb = ysb + squishOffset;
+            var squishOffset = (xsb + ysb) * SQUISH_CONSTANT_2D;
+            var xb = xsb + squishOffset;
+            var yb = ysb + squishOffset;
 
             //Compute grid coordinates relative to rhombus origin.
-            double xins = xs - xsb;
-            double yins = ys - ysb;
+            var xins = xs - xsb;
+            var yins = ys - ysb;
 
             //Sum those together to get a value that determines which region we're in.
-            double inSum = xins + yins;
+            var inSum = xins + yins;
 
             //Positions relative to origin point.
-            double dx0 = x - xb;
-            double dy0 = y - yb;
+            var dx0 = x - xb;
+            var dy0 = y - yb;
 
             //We'll be defining these inside the next block and using them afterwards.
             double dx_ext, dy_ext;
@@ -157,9 +163,9 @@ namespace Endeavour
             double value = 0;
 
             //Contribution (1,0)
-            double dx1 = dx0 - 1 - SQUISH_CONSTANT_2D;
-            double dy1 = dy0 - 0 - SQUISH_CONSTANT_2D;
-            double attn1 = 2 - dx1 * dx1 - dy1 * dy1;
+            var dx1 = dx0 - 1 - SQUISH_CONSTANT_2D;
+            var dy1 = dy0 - 0 - SQUISH_CONSTANT_2D;
+            var attn1 = 2 - dx1 * dx1 - dy1 * dy1;
             if (attn1 > 0)
             {
                 attn1 *= attn1;
@@ -167,9 +173,9 @@ namespace Endeavour
             }
 
             //Contribution (0,1)
-            double dx2 = dx0 - 0 - SQUISH_CONSTANT_2D;
-            double dy2 = dy0 - 1 - SQUISH_CONSTANT_2D;
-            double attn2 = 2 - dx2 * dx2 - dy2 * dy2;
+            var dx2 = dx0 - 0 - SQUISH_CONSTANT_2D;
+            var dy2 = dy0 - 1 - SQUISH_CONSTANT_2D;
+            var attn2 = 2 - dx2 * dx2 - dy2 * dy2;
             if (attn2 > 0)
             {
                 attn2 *= attn2;
@@ -178,7 +184,7 @@ namespace Endeavour
 
             if (inSum <= 1)
             { //We're inside the triangle (2-Simplex) at (0,0)
-                double zins = 1 - inSum;
+                var zins = 1 - inSum;
                 if (zins > xins || zins > yins)
                 { //(0,0) is one of the closest two triangular vertices
                     if (xins > yins)
@@ -206,7 +212,7 @@ namespace Endeavour
             }
             else
             { //We're inside the triangle (2-Simplex) at (1,1)
-                double zins = 2 - inSum;
+                var zins = 2 - inSum;
                 if (zins < xins || zins < yins)
                 { //(0,0) is one of the closest two triangular vertices
                     if (xins > yins)
@@ -238,7 +244,7 @@ namespace Endeavour
             }
 
             //Contribution (0,0) or (1,1)
-            double attn0 = 2 - dx0 * dx0 - dy0 * dy0;
+            var attn0 = 2 - dx0 * dx0 - dy0 * dy0;
             if (attn0 > 0)
             {
                 attn0 *= attn0;
@@ -246,7 +252,7 @@ namespace Endeavour
             }
 
             //Extra Vertex
-            double attn_ext = 2 - dx_ext * dx_ext - dy_ext * dy_ext;
+            var attn_ext = 2 - dx_ext * dx_ext - dy_ext * dy_ext;
             if (attn_ext > 0)
             {
                 attn_ext *= attn_ext;
@@ -261,34 +267,34 @@ namespace Endeavour
         {
 
             //Place input coordinates on simplectic honeycomb.
-            double stretchOffset = (x + y + z) * STRETCH_CONSTANT_3D;
-            double xs = x + stretchOffset;
-            double ys = y + stretchOffset;
-            double zs = z + stretchOffset;
+            var stretchOffset = (x + y + z) * STRETCH_CONSTANT_3D;
+            var xs = x + stretchOffset;
+            var ys = y + stretchOffset;
+            var zs = z + stretchOffset;
 
             //Floor to get simplectic honeycomb coordinates of rhombohedron (stretched cube) super-cell origin.
-            int xsb = fastFloor(xs);
-            int ysb = fastFloor(ys);
-            int zsb = fastFloor(zs);
+            var xsb = fastFloor(xs);
+            var ysb = fastFloor(ys);
+            var zsb = fastFloor(zs);
 
             //Skew out to get actual coordinates of rhombohedron origin. We'll need these later.
-            double squishOffset = (xsb + ysb + zsb) * SQUISH_CONSTANT_3D;
-            double xb = xsb + squishOffset;
-            double yb = ysb + squishOffset;
-            double zb = zsb + squishOffset;
+            var squishOffset = (xsb + ysb + zsb) * SQUISH_CONSTANT_3D;
+            var xb = xsb + squishOffset;
+            var yb = ysb + squishOffset;
+            var zb = zsb + squishOffset;
 
             //Compute simplectic honeycomb coordinates relative to rhombohedral origin.
-            double xins = xs - xsb;
-            double yins = ys - ysb;
-            double zins = zs - zsb;
+            var xins = xs - xsb;
+            var yins = ys - ysb;
+            var zins = zs - zsb;
 
             //Sum those together to get a value that determines which region we're in.
-            double inSum = xins + yins + zins;
+            var inSum = xins + yins + zins;
 
             //Positions relative to origin point.
-            double dx0 = x - xb;
-            double dy0 = y - yb;
-            double dz0 = z - zb;
+            var dx0 = x - xb;
+            var dy0 = y - yb;
+            var dz0 = z - zb;
 
             //We'll be defining these inside the next block and using them afterwards.
             double dx_ext0, dy_ext0, dz_ext0;
@@ -302,9 +308,9 @@ namespace Endeavour
 
                 //Determine which two of (0,0,1), (0,1,0), (1,0,0) are closest.
                 byte aPoint = 0x01;
-                double aScore = xins;
+                var aScore = xins;
                 byte bPoint = 0x02;
-                double bScore = yins;
+                var bScore = yins;
                 if (aScore >= bScore && zins > bScore)
                 {
                     bScore = zins;
@@ -318,10 +324,10 @@ namespace Endeavour
 
                 //Now we determine the two lattice points not part of the tetrahedron that may contribute.
                 //This depends on the closest two tetrahedral vertices, including (0,0,0)
-                double wins = 1 - inSum;
+                var wins = 1 - inSum;
                 if (wins > aScore || wins > bScore)
                 { //(0,0,0) is one of the closest two tetrahedral vertices.
-                    byte c = (bScore > aScore ? bPoint : aPoint); //Our other closest vertex is the closest out of a and b.
+                    var c = (bScore > aScore ? bPoint : aPoint); //Our other closest vertex is the closest out of a and b.
 
                     if ((c & 0x01) == 0)
                     {
@@ -372,7 +378,7 @@ namespace Endeavour
                 }
                 else
                 { //(0,0,0) is not one of the closest two tetrahedral vertices.
-                    byte c = (byte)(aPoint | bPoint); //Our two extra vertices are determined by the closest two.
+                    var c = (byte)(aPoint | bPoint); //Our two extra vertices are determined by the closest two.
 
                     if ((c & 0x01) == 0)
                     {
@@ -418,7 +424,7 @@ namespace Endeavour
                 }
 
                 //Contribution (0,0,0)
-                double attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0;
+                var attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0;
                 if (attn0 > 0)
                 {
                     attn0 *= attn0;
@@ -426,10 +432,10 @@ namespace Endeavour
                 }
 
                 //Contribution (1,0,0)
-                double dx1 = dx0 - 1 - SQUISH_CONSTANT_3D;
-                double dy1 = dy0 - 0 - SQUISH_CONSTANT_3D;
-                double dz1 = dz0 - 0 - SQUISH_CONSTANT_3D;
-                double attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1;
+                var dx1 = dx0 - 1 - SQUISH_CONSTANT_3D;
+                var dy1 = dy0 - 0 - SQUISH_CONSTANT_3D;
+                var dz1 = dz0 - 0 - SQUISH_CONSTANT_3D;
+                var attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1;
                 if (attn1 > 0)
                 {
                     attn1 *= attn1;
@@ -437,10 +443,10 @@ namespace Endeavour
                 }
 
                 //Contribution (0,1,0)
-                double dx2 = dx0 - 0 - SQUISH_CONSTANT_3D;
-                double dy2 = dy0 - 1 - SQUISH_CONSTANT_3D;
-                double dz2 = dz1;
-                double attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2;
+                var dx2 = dx0 - 0 - SQUISH_CONSTANT_3D;
+                var dy2 = dy0 - 1 - SQUISH_CONSTANT_3D;
+                var dz2 = dz1;
+                var attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2;
                 if (attn2 > 0)
                 {
                     attn2 *= attn2;
@@ -448,10 +454,10 @@ namespace Endeavour
                 }
 
                 //Contribution (0,0,1)
-                double dx3 = dx2;
-                double dy3 = dy1;
-                double dz3 = dz0 - 1 - SQUISH_CONSTANT_3D;
-                double attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3;
+                var dx3 = dx2;
+                var dy3 = dy1;
+                var dz3 = dz0 - 1 - SQUISH_CONSTANT_3D;
+                var attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3;
                 if (attn3 > 0)
                 {
                     attn3 *= attn3;
@@ -463,9 +469,9 @@ namespace Endeavour
 
                 //Determine which two tetrahedral vertices are the closest, out of (1,1,0), (1,0,1), (0,1,1) but not (1,1,1).
                 byte aPoint = 0x06;
-                double aScore = xins;
+                var aScore = xins;
                 byte bPoint = 0x05;
-                double bScore = yins;
+                var bScore = yins;
                 if (aScore <= bScore && zins < bScore)
                 {
                     bScore = zins;
@@ -479,10 +485,10 @@ namespace Endeavour
 
                 //Now we determine the two lattice points not part of the tetrahedron that may contribute.
                 //This depends on the closest two tetrahedral vertices, including (1,1,1)
-                double wins = 3 - inSum;
+                var wins = 3 - inSum;
                 if (wins < aScore || wins < bScore)
                 { //(1,1,1) is one of the closest two tetrahedral vertices.
-                    byte c = (bScore < aScore ? bPoint : aPoint); //Our other closest vertex is the closest out of a and b.
+                    var c = (bScore < aScore ? bPoint : aPoint); //Our other closest vertex is the closest out of a and b.
 
                     if ((c & 0x01) != 0)
                     {
@@ -533,7 +539,7 @@ namespace Endeavour
                 }
                 else
                 { //(1,1,1) is not one of the closest two tetrahedral vertices.
-                    byte c = (byte)(aPoint & bPoint); //Our two extra vertices are determined by the closest two.
+                    var c = (byte)(aPoint & bPoint); //Our two extra vertices are determined by the closest two.
 
                     if ((c & 0x01) != 0)
                     {
@@ -579,10 +585,10 @@ namespace Endeavour
                 }
 
                 //Contribution (1,1,0)
-                double dx3 = dx0 - 1 - 2 * SQUISH_CONSTANT_3D;
-                double dy3 = dy0 - 1 - 2 * SQUISH_CONSTANT_3D;
-                double dz3 = dz0 - 0 - 2 * SQUISH_CONSTANT_3D;
-                double attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3;
+                var dx3 = dx0 - 1 - 2 * SQUISH_CONSTANT_3D;
+                var dy3 = dy0 - 1 - 2 * SQUISH_CONSTANT_3D;
+                var dz3 = dz0 - 0 - 2 * SQUISH_CONSTANT_3D;
+                var attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3;
                 if (attn3 > 0)
                 {
                     attn3 *= attn3;
@@ -590,10 +596,10 @@ namespace Endeavour
                 }
 
                 //Contribution (1,0,1)
-                double dx2 = dx3;
-                double dy2 = dy0 - 0 - 2 * SQUISH_CONSTANT_3D;
-                double dz2 = dz0 - 1 - 2 * SQUISH_CONSTANT_3D;
-                double attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2;
+                var dx2 = dx3;
+                var dy2 = dy0 - 0 - 2 * SQUISH_CONSTANT_3D;
+                var dz2 = dz0 - 1 - 2 * SQUISH_CONSTANT_3D;
+                var attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2;
                 if (attn2 > 0)
                 {
                     attn2 *= attn2;
@@ -601,10 +607,10 @@ namespace Endeavour
                 }
 
                 //Contribution (0,1,1)
-                double dx1 = dx0 - 0 - 2 * SQUISH_CONSTANT_3D;
-                double dy1 = dy3;
-                double dz1 = dz2;
-                double attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1;
+                var dx1 = dx0 - 0 - 2 * SQUISH_CONSTANT_3D;
+                var dy1 = dy3;
+                var dz1 = dz2;
+                var attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1;
                 if (attn1 > 0)
                 {
                     attn1 *= attn1;
@@ -615,7 +621,7 @@ namespace Endeavour
                 dx0 = dx0 - 1 - 3 * SQUISH_CONSTANT_3D;
                 dy0 = dy0 - 1 - 3 * SQUISH_CONSTANT_3D;
                 dz0 = dz0 - 1 - 3 * SQUISH_CONSTANT_3D;
-                double attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0;
+                var attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0;
                 if (attn0 > 0)
                 {
                     attn0 *= attn0;
@@ -632,7 +638,7 @@ namespace Endeavour
                 bool bIsFurtherSide;
 
                 //Decide between point (0,0,1) and (1,1,0) as closest
-                double p1 = xins + yins;
+                var p1 = xins + yins;
                 if (p1 > 1)
                 {
                     aScore = p1 - 1;
@@ -647,7 +653,7 @@ namespace Endeavour
                 }
 
                 //Decide between point (0,1,0) and (1,0,1) as closest
-                double p2 = xins + zins;
+                var p2 = xins + zins;
                 if (p2 > 1)
                 {
                     bScore = p2 - 1;
@@ -662,10 +668,10 @@ namespace Endeavour
                 }
 
                 //The closest out of the two (1,0,0) and (0,1,1) will replace the furthest out of the two decided above, if closer.
-                double p3 = yins + zins;
+                var p3 = yins + zins;
                 if (p3 > 1)
                 {
-                    double score = p3 - 1;
+                    var score = p3 - 1;
                     if (aScore <= bScore && aScore < score)
                     {
                         aScore = score;
@@ -681,7 +687,7 @@ namespace Endeavour
                 }
                 else
                 {
-                    double score = 1 - p3;
+                    var score = 1 - p3;
                     if (aScore <= bScore && aScore < score)
                     {
                         aScore = score;
@@ -711,7 +717,7 @@ namespace Endeavour
                         zsv_ext0 = zsb + 1;
 
                         //Other extra point is based on the shared axis.
-                        byte c = (byte)(aPoint & bPoint);
+                        var c = (byte)(aPoint & bPoint);
                         if ((c & 0x01) != 0)
                         {
                             dx_ext1 = dx0 - 2 - 2 * SQUISH_CONSTANT_3D;
@@ -752,7 +758,7 @@ namespace Endeavour
                         zsv_ext0 = zsb;
 
                         //Other extra point is based on the omitted axis.
-                        byte c = (byte)(aPoint | bPoint);
+                        var c = (byte)(aPoint | bPoint);
                         if ((c & 0x01) == 0)
                         {
                             dx_ext1 = dx0 + 1 - SQUISH_CONSTANT_3D;
@@ -850,10 +856,10 @@ namespace Endeavour
                 }
 
                 //Contribution (1,0,0)
-                double dx1 = dx0 - 1 - SQUISH_CONSTANT_3D;
-                double dy1 = dy0 - 0 - SQUISH_CONSTANT_3D;
-                double dz1 = dz0 - 0 - SQUISH_CONSTANT_3D;
-                double attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1;
+                var dx1 = dx0 - 1 - SQUISH_CONSTANT_3D;
+                var dy1 = dy0 - 0 - SQUISH_CONSTANT_3D;
+                var dz1 = dz0 - 0 - SQUISH_CONSTANT_3D;
+                var attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1;
                 if (attn1 > 0)
                 {
                     attn1 *= attn1;
@@ -861,10 +867,10 @@ namespace Endeavour
                 }
 
                 //Contribution (0,1,0)
-                double dx2 = dx0 - 0 - SQUISH_CONSTANT_3D;
-                double dy2 = dy0 - 1 - SQUISH_CONSTANT_3D;
-                double dz2 = dz1;
-                double attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2;
+                var dx2 = dx0 - 0 - SQUISH_CONSTANT_3D;
+                var dy2 = dy0 - 1 - SQUISH_CONSTANT_3D;
+                var dz2 = dz1;
+                var attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2;
                 if (attn2 > 0)
                 {
                     attn2 *= attn2;
@@ -872,10 +878,10 @@ namespace Endeavour
                 }
 
                 //Contribution (0,0,1)
-                double dx3 = dx2;
-                double dy3 = dy1;
-                double dz3 = dz0 - 1 - SQUISH_CONSTANT_3D;
-                double attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3;
+                var dx3 = dx2;
+                var dy3 = dy1;
+                var dz3 = dz0 - 1 - SQUISH_CONSTANT_3D;
+                var attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3;
                 if (attn3 > 0)
                 {
                     attn3 *= attn3;
@@ -883,10 +889,10 @@ namespace Endeavour
                 }
 
                 //Contribution (1,1,0)
-                double dx4 = dx0 - 1 - 2 * SQUISH_CONSTANT_3D;
-                double dy4 = dy0 - 1 - 2 * SQUISH_CONSTANT_3D;
-                double dz4 = dz0 - 0 - 2 * SQUISH_CONSTANT_3D;
-                double attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4;
+                var dx4 = dx0 - 1 - 2 * SQUISH_CONSTANT_3D;
+                var dy4 = dy0 - 1 - 2 * SQUISH_CONSTANT_3D;
+                var dz4 = dz0 - 0 - 2 * SQUISH_CONSTANT_3D;
+                var attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4;
                 if (attn4 > 0)
                 {
                     attn4 *= attn4;
@@ -894,10 +900,10 @@ namespace Endeavour
                 }
 
                 //Contribution (1,0,1)
-                double dx5 = dx4;
-                double dy5 = dy0 - 0 - 2 * SQUISH_CONSTANT_3D;
-                double dz5 = dz0 - 1 - 2 * SQUISH_CONSTANT_3D;
-                double attn5 = 2 - dx5 * dx5 - dy5 * dy5 - dz5 * dz5;
+                var dx5 = dx4;
+                var dy5 = dy0 - 0 - 2 * SQUISH_CONSTANT_3D;
+                var dz5 = dz0 - 1 - 2 * SQUISH_CONSTANT_3D;
+                var attn5 = 2 - dx5 * dx5 - dy5 * dy5 - dz5 * dz5;
                 if (attn5 > 0)
                 {
                     attn5 *= attn5;
@@ -905,10 +911,10 @@ namespace Endeavour
                 }
 
                 //Contribution (0,1,1)
-                double dx6 = dx0 - 0 - 2 * SQUISH_CONSTANT_3D;
-                double dy6 = dy4;
-                double dz6 = dz5;
-                double attn6 = 2 - dx6 * dx6 - dy6 * dy6 - dz6 * dz6;
+                var dx6 = dx0 - 0 - 2 * SQUISH_CONSTANT_3D;
+                var dy6 = dy4;
+                var dz6 = dz5;
+                var attn6 = 2 - dx6 * dx6 - dy6 * dy6 - dz6 * dz6;
                 if (attn6 > 0)
                 {
                     attn6 *= attn6;
@@ -917,7 +923,7 @@ namespace Endeavour
             }
 
             //First extra vertex
-            double attn_ext0 = 2 - dx_ext0 * dx_ext0 - dy_ext0 * dy_ext0 - dz_ext0 * dz_ext0;
+            var attn_ext0 = 2 - dx_ext0 * dx_ext0 - dy_ext0 * dy_ext0 - dz_ext0 * dz_ext0;
             if (attn_ext0 > 0)
             {
                 attn_ext0 *= attn_ext0;
@@ -925,7 +931,7 @@ namespace Endeavour
             }
 
             //Second extra vertex
-            double attn_ext1 = 2 - dx_ext1 * dx_ext1 - dy_ext1 * dy_ext1 - dz_ext1 * dz_ext1;
+            var attn_ext1 = 2 - dx_ext1 * dx_ext1 - dy_ext1 * dy_ext1 - dz_ext1 * dz_ext1;
             if (attn_ext1 > 0)
             {
                 attn_ext1 *= attn_ext1;
@@ -940,39 +946,39 @@ namespace Endeavour
         {
 
             //Place input coordinates on simplectic honeycomb.
-            double stretchOffset = (x + y + z + w) * STRETCH_CONSTANT_4D;
-            double xs = x + stretchOffset;
-            double ys = y + stretchOffset;
-            double zs = z + stretchOffset;
-            double ws = w + stretchOffset;
+            var stretchOffset = (x + y + z + w) * STRETCH_CONSTANT_4D;
+            var xs = x + stretchOffset;
+            var ys = y + stretchOffset;
+            var zs = z + stretchOffset;
+            var ws = w + stretchOffset;
 
             //Floor to get simplectic honeycomb coordinates of rhombo-hypercube super-cell origin.
-            int xsb = fastFloor(xs);
-            int ysb = fastFloor(ys);
-            int zsb = fastFloor(zs);
-            int wsb = fastFloor(ws);
+            var xsb = fastFloor(xs);
+            var ysb = fastFloor(ys);
+            var zsb = fastFloor(zs);
+            var wsb = fastFloor(ws);
 
             //Skew out to get actual coordinates of stretched rhombo-hypercube origin. We'll need these later.
-            double squishOffset = (xsb + ysb + zsb + wsb) * SQUISH_CONSTANT_4D;
-            double xb = xsb + squishOffset;
-            double yb = ysb + squishOffset;
-            double zb = zsb + squishOffset;
-            double wb = wsb + squishOffset;
+            var squishOffset = (xsb + ysb + zsb + wsb) * SQUISH_CONSTANT_4D;
+            var xb = xsb + squishOffset;
+            var yb = ysb + squishOffset;
+            var zb = zsb + squishOffset;
+            var wb = wsb + squishOffset;
 
             //Compute simplectic honeycomb coordinates relative to rhombo-hypercube origin.
-            double xins = xs - xsb;
-            double yins = ys - ysb;
-            double zins = zs - zsb;
-            double wins = ws - wsb;
+            var xins = xs - xsb;
+            var yins = ys - ysb;
+            var zins = zs - zsb;
+            var wins = ws - wsb;
 
             //Sum those together to get a value that determines which region we're in.
-            double inSum = xins + yins + zins + wins;
+            var inSum = xins + yins + zins + wins;
 
             //Positions relative to origin point.
-            double dx0 = x - xb;
-            double dy0 = y - yb;
-            double dz0 = z - zb;
-            double dw0 = w - wb;
+            var dx0 = x - xb;
+            var dy0 = y - yb;
+            var dz0 = z - zb;
+            var dw0 = w - wb;
 
             //We'll be defining these inside the next block and using them afterwards.
             double dx_ext0, dy_ext0, dz_ext0, dw_ext0;
@@ -988,9 +994,9 @@ namespace Endeavour
 
                 //Determine which two of (0,0,0,1), (0,0,1,0), (0,1,0,0), (1,0,0,0) are closest.
                 byte aPoint = 0x01;
-                double aScore = xins;
+                var aScore = xins;
                 byte bPoint = 0x02;
-                double bScore = yins;
+                var bScore = yins;
                 if (aScore >= bScore && zins > bScore)
                 {
                     bScore = zins;
@@ -1014,10 +1020,10 @@ namespace Endeavour
 
                 //Now we determine the three lattice points not part of the pentachoron that may contribute.
                 //This depends on the closest two pentachoron vertices, including (0,0,0,0)
-                double uins = 1 - inSum;
+                var uins = 1 - inSum;
                 if (uins > aScore || uins > bScore)
                 { //(0,0,0,0) is one of the closest two pentachoron vertices.
-                    byte c = (bScore > aScore ? bPoint : aPoint); //Our other closest vertex is the closest out of a and b.
+                    var c = (bScore > aScore ? bPoint : aPoint); //Our other closest vertex is the closest out of a and b.
                     if ((c & 0x01) == 0)
                     {
                         xsv_ext0 = xsb - 1;
@@ -1096,7 +1102,7 @@ namespace Endeavour
                 }
                 else
                 { //(0,0,0,0) is not one of the closest two pentachoron vertices.
-                    byte c = (byte)(aPoint | bPoint); //Our three extra vertices are determined by the closest two.
+                    var c = (byte)(aPoint | bPoint); //Our three extra vertices are determined by the closest two.
 
                     if ((c & 0x01) == 0)
                     {
@@ -1176,7 +1182,7 @@ namespace Endeavour
                 }
 
                 //Contribution (0,0,0,0)
-                double attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0 - dw0 * dw0;
+                var attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0 - dw0 * dw0;
                 if (attn0 > 0)
                 {
                     attn0 *= attn0;
@@ -1184,11 +1190,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,0,0,0)
-                double dx1 = dx0 - 1 - SQUISH_CONSTANT_4D;
-                double dy1 = dy0 - 0 - SQUISH_CONSTANT_4D;
-                double dz1 = dz0 - 0 - SQUISH_CONSTANT_4D;
-                double dw1 = dw0 - 0 - SQUISH_CONSTANT_4D;
-                double attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
+                var dx1 = dx0 - 1 - SQUISH_CONSTANT_4D;
+                var dy1 = dy0 - 0 - SQUISH_CONSTANT_4D;
+                var dz1 = dz0 - 0 - SQUISH_CONSTANT_4D;
+                var dw1 = dw0 - 0 - SQUISH_CONSTANT_4D;
+                var attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
                 if (attn1 > 0)
                 {
                     attn1 *= attn1;
@@ -1196,11 +1202,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,1,0,0)
-                double dx2 = dx0 - 0 - SQUISH_CONSTANT_4D;
-                double dy2 = dy0 - 1 - SQUISH_CONSTANT_4D;
-                double dz2 = dz1;
-                double dw2 = dw1;
-                double attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
+                var dx2 = dx0 - 0 - SQUISH_CONSTANT_4D;
+                var dy2 = dy0 - 1 - SQUISH_CONSTANT_4D;
+                var dz2 = dz1;
+                var dw2 = dw1;
+                var attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
                 if (attn2 > 0)
                 {
                     attn2 *= attn2;
@@ -1208,11 +1214,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,0,1,0)
-                double dx3 = dx2;
-                double dy3 = dy1;
-                double dz3 = dz0 - 1 - SQUISH_CONSTANT_4D;
-                double dw3 = dw1;
-                double attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
+                var dx3 = dx2;
+                var dy3 = dy1;
+                var dz3 = dz0 - 1 - SQUISH_CONSTANT_4D;
+                var dw3 = dw1;
+                var attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
                 if (attn3 > 0)
                 {
                     attn3 *= attn3;
@@ -1220,11 +1226,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,0,0,1)
-                double dx4 = dx2;
-                double dy4 = dy1;
-                double dz4 = dz1;
-                double dw4 = dw0 - 1 - SQUISH_CONSTANT_4D;
-                double attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
+                var dx4 = dx2;
+                var dy4 = dy1;
+                var dz4 = dz1;
+                var dw4 = dw0 - 1 - SQUISH_CONSTANT_4D;
+                var attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
                 if (attn4 > 0)
                 {
                     attn4 *= attn4;
@@ -1235,9 +1241,9 @@ namespace Endeavour
             { //We're inside the pentachoron (4-Simplex) at (1,1,1,1)
               //Determine which two of (1,1,1,0), (1,1,0,1), (1,0,1,1), (0,1,1,1) are closest.
                 byte aPoint = 0x0E;
-                double aScore = xins;
+                var aScore = xins;
                 byte bPoint = 0x0D;
-                double bScore = yins;
+                var bScore = yins;
                 if (aScore <= bScore && zins < bScore)
                 {
                     bScore = zins;
@@ -1261,10 +1267,10 @@ namespace Endeavour
 
                 //Now we determine the three lattice points not part of the pentachoron that may contribute.
                 //This depends on the closest two pentachoron vertices, including (0,0,0,0)
-                double uins = 4 - inSum;
+                var uins = 4 - inSum;
                 if (uins < aScore || uins < bScore)
                 { //(1,1,1,1) is one of the closest two pentachoron vertices.
-                    byte c = (bScore < aScore ? bPoint : aPoint); //Our other closest vertex is the closest out of a and b.
+                    var c = (bScore < aScore ? bPoint : aPoint); //Our other closest vertex is the closest out of a and b.
 
                     if ((c & 0x01) != 0)
                     {
@@ -1344,7 +1350,7 @@ namespace Endeavour
                 }
                 else
                 { //(1,1,1,1) is not one of the closest two pentachoron vertices.
-                    byte c = (byte)(aPoint & bPoint); //Our three extra vertices are determined by the closest two.
+                    var c = (byte)(aPoint & bPoint); //Our three extra vertices are determined by the closest two.
 
                     if ((c & 0x01) != 0)
                     {
@@ -1424,11 +1430,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,1,1,0)
-                double dx4 = dx0 - 1 - 3 * SQUISH_CONSTANT_4D;
-                double dy4 = dy0 - 1 - 3 * SQUISH_CONSTANT_4D;
-                double dz4 = dz0 - 1 - 3 * SQUISH_CONSTANT_4D;
-                double dw4 = dw0 - 3 * SQUISH_CONSTANT_4D;
-                double attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
+                var dx4 = dx0 - 1 - 3 * SQUISH_CONSTANT_4D;
+                var dy4 = dy0 - 1 - 3 * SQUISH_CONSTANT_4D;
+                var dz4 = dz0 - 1 - 3 * SQUISH_CONSTANT_4D;
+                var dw4 = dw0 - 3 * SQUISH_CONSTANT_4D;
+                var attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
                 if (attn4 > 0)
                 {
                     attn4 *= attn4;
@@ -1436,11 +1442,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,1,0,1)
-                double dx3 = dx4;
-                double dy3 = dy4;
-                double dz3 = dz0 - 3 * SQUISH_CONSTANT_4D;
-                double dw3 = dw0 - 1 - 3 * SQUISH_CONSTANT_4D;
-                double attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
+                var dx3 = dx4;
+                var dy3 = dy4;
+                var dz3 = dz0 - 3 * SQUISH_CONSTANT_4D;
+                var dw3 = dw0 - 1 - 3 * SQUISH_CONSTANT_4D;
+                var attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
                 if (attn3 > 0)
                 {
                     attn3 *= attn3;
@@ -1448,11 +1454,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,0,1,1)
-                double dx2 = dx4;
-                double dy2 = dy0 - 3 * SQUISH_CONSTANT_4D;
-                double dz2 = dz4;
-                double dw2 = dw3;
-                double attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
+                var dx2 = dx4;
+                var dy2 = dy0 - 3 * SQUISH_CONSTANT_4D;
+                var dz2 = dz4;
+                var dw2 = dw3;
+                var attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
                 if (attn2 > 0)
                 {
                     attn2 *= attn2;
@@ -1460,11 +1466,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,1,1,1)
-                double dx1 = dx0 - 3 * SQUISH_CONSTANT_4D;
-                double dz1 = dz4;
-                double dy1 = dy4;
-                double dw1 = dw3;
-                double attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
+                var dx1 = dx0 - 3 * SQUISH_CONSTANT_4D;
+                var dz1 = dz4;
+                var dy1 = dy4;
+                var dw1 = dw3;
+                var attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
                 if (attn1 > 0)
                 {
                     attn1 *= attn1;
@@ -1476,7 +1482,7 @@ namespace Endeavour
                 dy0 = dy0 - 1 - 4 * SQUISH_CONSTANT_4D;
                 dz0 = dz0 - 1 - 4 * SQUISH_CONSTANT_4D;
                 dw0 = dw0 - 1 - 4 * SQUISH_CONSTANT_4D;
-                double attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0 - dw0 * dw0;
+                var attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0 - dw0 * dw0;
                 if (attn0 > 0)
                 {
                     attn0 *= attn0;
@@ -1487,10 +1493,10 @@ namespace Endeavour
             { //We're inside the first dispentachoron (Rectified 4-Simplex)
                 double aScore;
                 byte aPoint;
-                bool aIsBiggerSide = true;
+                var aIsBiggerSide = true;
                 double bScore;
                 byte bPoint;
-                bool bIsBiggerSide = true;
+                var bIsBiggerSide = true;
 
                 //Decide between (1,1,0,0) and (0,0,1,1)
                 if (xins + yins > zins + wins)
@@ -1519,7 +1525,7 @@ namespace Endeavour
                 //Closer between (1,0,0,1) and (0,1,1,0) will replace the further of a and b, if closer.
                 if (xins + wins > yins + zins)
                 {
-                    double score = xins + wins;
+                    var score = xins + wins;
                     if (aScore >= bScore && score > bScore)
                     {
                         bScore = score;
@@ -1533,7 +1539,7 @@ namespace Endeavour
                 }
                 else
                 {
-                    double score = yins + zins;
+                    var score = yins + zins;
                     if (aScore >= bScore && score > bScore)
                     {
                         bScore = score;
@@ -1547,7 +1553,7 @@ namespace Endeavour
                 }
 
                 //Decide if (1,0,0,0) is closer.
-                double p1 = 2 - inSum + xins;
+                var p1 = 2 - inSum + xins;
                 if (aScore >= bScore && p1 > bScore)
                 {
                     bScore = p1;
@@ -1562,7 +1568,7 @@ namespace Endeavour
                 }
 
                 //Decide if (0,1,0,0) is closer.
-                double p2 = 2 - inSum + yins;
+                var p2 = 2 - inSum + yins;
                 if (aScore >= bScore && p2 > bScore)
                 {
                     bScore = p2;
@@ -1577,7 +1583,7 @@ namespace Endeavour
                 }
 
                 //Decide if (0,0,1,0) is closer.
-                double p3 = 2 - inSum + zins;
+                var p3 = 2 - inSum + zins;
                 if (aScore >= bScore && p3 > bScore)
                 {
                     bScore = p3;
@@ -1592,7 +1598,7 @@ namespace Endeavour
                 }
 
                 //Decide if (0,0,0,1) is closer.
-                double p4 = 2 - inSum + wins;
+                var p4 = 2 - inSum + wins;
                 if (aScore >= bScore && p4 > bScore)
                 {
                     bScore = p4;
@@ -1611,8 +1617,8 @@ namespace Endeavour
                 {
                     if (aIsBiggerSide)
                     { //Both closest points on the bigger side
-                        byte c1 = (byte)(aPoint | bPoint);
-                        byte c2 = (byte)(aPoint & bPoint);
+                        var c1 = (byte)(aPoint | bPoint);
+                        var c2 = (byte)(aPoint & bPoint);
                         if ((c1 & 0x01) == 0)
                         {
                             xsv_ext0 = xsb;
@@ -1713,7 +1719,7 @@ namespace Endeavour
                         dw_ext2 = dw0;
 
                         //Other two points are based on the omitted axes.
-                        byte c = (byte)(aPoint | bPoint);
+                        var c = (byte)(aPoint | bPoint);
 
                         if ((c & 0x01) == 0)
                         {
@@ -1900,11 +1906,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,0,0,0)
-                double dx1 = dx0 - 1 - SQUISH_CONSTANT_4D;
-                double dy1 = dy0 - 0 - SQUISH_CONSTANT_4D;
-                double dz1 = dz0 - 0 - SQUISH_CONSTANT_4D;
-                double dw1 = dw0 - 0 - SQUISH_CONSTANT_4D;
-                double attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
+                var dx1 = dx0 - 1 - SQUISH_CONSTANT_4D;
+                var dy1 = dy0 - 0 - SQUISH_CONSTANT_4D;
+                var dz1 = dz0 - 0 - SQUISH_CONSTANT_4D;
+                var dw1 = dw0 - 0 - SQUISH_CONSTANT_4D;
+                var attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
                 if (attn1 > 0)
                 {
                     attn1 *= attn1;
@@ -1912,11 +1918,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,1,0,0)
-                double dx2 = dx0 - 0 - SQUISH_CONSTANT_4D;
-                double dy2 = dy0 - 1 - SQUISH_CONSTANT_4D;
-                double dz2 = dz1;
-                double dw2 = dw1;
-                double attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
+                var dx2 = dx0 - 0 - SQUISH_CONSTANT_4D;
+                var dy2 = dy0 - 1 - SQUISH_CONSTANT_4D;
+                var dz2 = dz1;
+                var dw2 = dw1;
+                var attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
                 if (attn2 > 0)
                 {
                     attn2 *= attn2;
@@ -1924,11 +1930,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,0,1,0)
-                double dx3 = dx2;
-                double dy3 = dy1;
-                double dz3 = dz0 - 1 - SQUISH_CONSTANT_4D;
-                double dw3 = dw1;
-                double attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
+                var dx3 = dx2;
+                var dy3 = dy1;
+                var dz3 = dz0 - 1 - SQUISH_CONSTANT_4D;
+                var dw3 = dw1;
+                var attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
                 if (attn3 > 0)
                 {
                     attn3 *= attn3;
@@ -1936,11 +1942,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,0,0,1)
-                double dx4 = dx2;
-                double dy4 = dy1;
-                double dz4 = dz1;
-                double dw4 = dw0 - 1 - SQUISH_CONSTANT_4D;
-                double attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
+                var dx4 = dx2;
+                var dy4 = dy1;
+                var dz4 = dz1;
+                var dw4 = dw0 - 1 - SQUISH_CONSTANT_4D;
+                var attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
                 if (attn4 > 0)
                 {
                     attn4 *= attn4;
@@ -1948,11 +1954,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,1,0,0)
-                double dx5 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dy5 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dz5 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dw5 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double attn5 = 2 - dx5 * dx5 - dy5 * dy5 - dz5 * dz5 - dw5 * dw5;
+                var dx5 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dy5 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dz5 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dw5 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var attn5 = 2 - dx5 * dx5 - dy5 * dy5 - dz5 * dz5 - dw5 * dw5;
                 if (attn5 > 0)
                 {
                     attn5 *= attn5;
@@ -1960,11 +1966,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,0,1,0)
-                double dx6 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dy6 = dy0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dz6 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dw6 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double attn6 = 2 - dx6 * dx6 - dy6 * dy6 - dz6 * dz6 - dw6 * dw6;
+                var dx6 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dy6 = dy0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dz6 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dw6 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var attn6 = 2 - dx6 * dx6 - dy6 * dy6 - dz6 * dz6 - dw6 * dw6;
                 if (attn6 > 0)
                 {
                     attn6 *= attn6;
@@ -1972,11 +1978,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,0,0,1)
-                double dx7 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dy7 = dy0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dz7 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dw7 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double attn7 = 2 - dx7 * dx7 - dy7 * dy7 - dz7 * dz7 - dw7 * dw7;
+                var dx7 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dy7 = dy0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dz7 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dw7 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var attn7 = 2 - dx7 * dx7 - dy7 * dy7 - dz7 * dz7 - dw7 * dw7;
                 if (attn7 > 0)
                 {
                     attn7 *= attn7;
@@ -1984,11 +1990,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,1,1,0)
-                double dx8 = dx0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dy8 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dz8 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dw8 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double attn8 = 2 - dx8 * dx8 - dy8 * dy8 - dz8 * dz8 - dw8 * dw8;
+                var dx8 = dx0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dy8 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dz8 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dw8 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var attn8 = 2 - dx8 * dx8 - dy8 * dy8 - dz8 * dz8 - dw8 * dw8;
                 if (attn8 > 0)
                 {
                     attn8 *= attn8;
@@ -1996,11 +2002,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,1,0,1)
-                double dx9 = dx0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dy9 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dz9 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dw9 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double attn9 = 2 - dx9 * dx9 - dy9 * dy9 - dz9 * dz9 - dw9 * dw9;
+                var dx9 = dx0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dy9 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dz9 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dw9 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var attn9 = 2 - dx9 * dx9 - dy9 * dy9 - dz9 * dz9 - dw9 * dw9;
                 if (attn9 > 0)
                 {
                     attn9 *= attn9;
@@ -2008,11 +2014,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,0,1,1)
-                double dx10 = dx0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dy10 = dy0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dz10 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dw10 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double attn10 = 2 - dx10 * dx10 - dy10 * dy10 - dz10 * dz10 - dw10 * dw10;
+                var dx10 = dx0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dy10 = dy0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dz10 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dw10 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var attn10 = 2 - dx10 * dx10 - dy10 * dy10 - dz10 * dz10 - dw10 * dw10;
                 if (attn10 > 0)
                 {
                     attn10 *= attn10;
@@ -2023,10 +2029,10 @@ namespace Endeavour
             { //We're inside the second dispentachoron (Rectified 4-Simplex)
                 double aScore;
                 byte aPoint;
-                bool aIsBiggerSide = true;
+                var aIsBiggerSide = true;
                 double bScore;
                 byte bPoint;
-                bool bIsBiggerSide = true;
+                var bIsBiggerSide = true;
 
                 //Decide between (0,0,1,1) and (1,1,0,0)
                 if (xins + yins < zins + wins)
@@ -2055,7 +2061,7 @@ namespace Endeavour
                 //Closer between (0,1,1,0) and (1,0,0,1) will replace the further of a and b, if closer.
                 if (xins + wins < yins + zins)
                 {
-                    double score = xins + wins;
+                    var score = xins + wins;
                     if (aScore <= bScore && score < bScore)
                     {
                         bScore = score;
@@ -2069,7 +2075,7 @@ namespace Endeavour
                 }
                 else
                 {
-                    double score = yins + zins;
+                    var score = yins + zins;
                     if (aScore <= bScore && score < bScore)
                     {
                         bScore = score;
@@ -2083,7 +2089,7 @@ namespace Endeavour
                 }
 
                 //Decide if (0,1,1,1) is closer.
-                double p1 = 3 - inSum + xins;
+                var p1 = 3 - inSum + xins;
                 if (aScore <= bScore && p1 < bScore)
                 {
                     bScore = p1;
@@ -2098,7 +2104,7 @@ namespace Endeavour
                 }
 
                 //Decide if (1,0,1,1) is closer.
-                double p2 = 3 - inSum + yins;
+                var p2 = 3 - inSum + yins;
                 if (aScore <= bScore && p2 < bScore)
                 {
                     bScore = p2;
@@ -2113,7 +2119,7 @@ namespace Endeavour
                 }
 
                 //Decide if (1,1,0,1) is closer.
-                double p3 = 3 - inSum + zins;
+                var p3 = 3 - inSum + zins;
                 if (aScore <= bScore && p3 < bScore)
                 {
                     bScore = p3;
@@ -2128,7 +2134,7 @@ namespace Endeavour
                 }
 
                 //Decide if (1,1,1,0) is closer.
-                double p4 = 3 - inSum + wins;
+                var p4 = 3 - inSum + wins;
                 if (aScore <= bScore && p4 < bScore)
                 {
                     bScore = p4;
@@ -2147,8 +2153,8 @@ namespace Endeavour
                 {
                     if (aIsBiggerSide)
                     { //Both closest points on the bigger side
-                        byte c1 = (byte)(aPoint & bPoint);
-                        byte c2 = (byte)(aPoint | bPoint);
+                        var c1 = (byte)(aPoint & bPoint);
+                        var c2 = (byte)(aPoint | bPoint);
 
                         //Two contributions are permutations of (0,0,0,1) and (0,0,0,2) based on c1
                         xsv_ext0 = xsv_ext1 = xsb;
@@ -2235,7 +2241,7 @@ namespace Endeavour
                         dw_ext2 = dw0 - 1 - 4 * SQUISH_CONSTANT_4D;
 
                         //Other two points are based on the shared axes.
-                        byte c = (byte)(aPoint & bPoint);
+                        var c = (byte)(aPoint & bPoint);
 
                         if ((c & 0x01) != 0)
                         {
@@ -2421,11 +2427,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,1,1,0)
-                double dx4 = dx0 - 1 - 3 * SQUISH_CONSTANT_4D;
-                double dy4 = dy0 - 1 - 3 * SQUISH_CONSTANT_4D;
-                double dz4 = dz0 - 1 - 3 * SQUISH_CONSTANT_4D;
-                double dw4 = dw0 - 3 * SQUISH_CONSTANT_4D;
-                double attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
+                var dx4 = dx0 - 1 - 3 * SQUISH_CONSTANT_4D;
+                var dy4 = dy0 - 1 - 3 * SQUISH_CONSTANT_4D;
+                var dz4 = dz0 - 1 - 3 * SQUISH_CONSTANT_4D;
+                var dw4 = dw0 - 3 * SQUISH_CONSTANT_4D;
+                var attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
                 if (attn4 > 0)
                 {
                     attn4 *= attn4;
@@ -2433,11 +2439,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,1,0,1)
-                double dx3 = dx4;
-                double dy3 = dy4;
-                double dz3 = dz0 - 3 * SQUISH_CONSTANT_4D;
-                double dw3 = dw0 - 1 - 3 * SQUISH_CONSTANT_4D;
-                double attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
+                var dx3 = dx4;
+                var dy3 = dy4;
+                var dz3 = dz0 - 3 * SQUISH_CONSTANT_4D;
+                var dw3 = dw0 - 1 - 3 * SQUISH_CONSTANT_4D;
+                var attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
                 if (attn3 > 0)
                 {
                     attn3 *= attn3;
@@ -2445,11 +2451,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,0,1,1)
-                double dx2 = dx4;
-                double dy2 = dy0 - 3 * SQUISH_CONSTANT_4D;
-                double dz2 = dz4;
-                double dw2 = dw3;
-                double attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
+                var dx2 = dx4;
+                var dy2 = dy0 - 3 * SQUISH_CONSTANT_4D;
+                var dz2 = dz4;
+                var dw2 = dw3;
+                var attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
                 if (attn2 > 0)
                 {
                     attn2 *= attn2;
@@ -2457,11 +2463,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,1,1,1)
-                double dx1 = dx0 - 3 * SQUISH_CONSTANT_4D;
-                double dz1 = dz4;
-                double dy1 = dy4;
-                double dw1 = dw3;
-                double attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
+                var dx1 = dx0 - 3 * SQUISH_CONSTANT_4D;
+                var dz1 = dz4;
+                var dy1 = dy4;
+                var dw1 = dw3;
+                var attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
                 if (attn1 > 0)
                 {
                     attn1 *= attn1;
@@ -2469,11 +2475,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,1,0,0)
-                double dx5 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dy5 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dz5 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dw5 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double attn5 = 2 - dx5 * dx5 - dy5 * dy5 - dz5 * dz5 - dw5 * dw5;
+                var dx5 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dy5 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dz5 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dw5 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var attn5 = 2 - dx5 * dx5 - dy5 * dy5 - dz5 * dz5 - dw5 * dw5;
                 if (attn5 > 0)
                 {
                     attn5 *= attn5;
@@ -2481,11 +2487,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,0,1,0)
-                double dx6 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dy6 = dy0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dz6 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dw6 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double attn6 = 2 - dx6 * dx6 - dy6 * dy6 - dz6 * dz6 - dw6 * dw6;
+                var dx6 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dy6 = dy0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dz6 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dw6 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var attn6 = 2 - dx6 * dx6 - dy6 * dy6 - dz6 * dz6 - dw6 * dw6;
                 if (attn6 > 0)
                 {
                     attn6 *= attn6;
@@ -2493,11 +2499,11 @@ namespace Endeavour
                 }
 
                 //Contribution (1,0,0,1)
-                double dx7 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dy7 = dy0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dz7 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dw7 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double attn7 = 2 - dx7 * dx7 - dy7 * dy7 - dz7 * dz7 - dw7 * dw7;
+                var dx7 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dy7 = dy0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dz7 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dw7 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var attn7 = 2 - dx7 * dx7 - dy7 * dy7 - dz7 * dz7 - dw7 * dw7;
                 if (attn7 > 0)
                 {
                     attn7 *= attn7;
@@ -2505,11 +2511,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,1,1,0)
-                double dx8 = dx0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dy8 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dz8 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dw8 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double attn8 = 2 - dx8 * dx8 - dy8 * dy8 - dz8 * dz8 - dw8 * dw8;
+                var dx8 = dx0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dy8 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dz8 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dw8 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var attn8 = 2 - dx8 * dx8 - dy8 * dy8 - dz8 * dz8 - dw8 * dw8;
                 if (attn8 > 0)
                 {
                     attn8 *= attn8;
@@ -2517,11 +2523,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,1,0,1)
-                double dx9 = dx0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dy9 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dz9 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dw9 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double attn9 = 2 - dx9 * dx9 - dy9 * dy9 - dz9 * dz9 - dw9 * dw9;
+                var dx9 = dx0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dy9 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dz9 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dw9 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var attn9 = 2 - dx9 * dx9 - dy9 * dy9 - dz9 * dz9 - dw9 * dw9;
                 if (attn9 > 0)
                 {
                     attn9 *= attn9;
@@ -2529,11 +2535,11 @@ namespace Endeavour
                 }
 
                 //Contribution (0,0,1,1)
-                double dx10 = dx0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dy10 = dy0 - 0 - 2 * SQUISH_CONSTANT_4D;
-                double dz10 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double dw10 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                double attn10 = 2 - dx10 * dx10 - dy10 * dy10 - dz10 * dz10 - dw10 * dw10;
+                var dx10 = dx0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dy10 = dy0 - 0 - 2 * SQUISH_CONSTANT_4D;
+                var dz10 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var dw10 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
+                var attn10 = 2 - dx10 * dx10 - dy10 * dy10 - dz10 * dz10 - dw10 * dw10;
                 if (attn10 > 0)
                 {
                     attn10 *= attn10;
@@ -2542,7 +2548,7 @@ namespace Endeavour
             }
 
             //First extra vertex
-            double attn_ext0 = 2 - dx_ext0 * dx_ext0 - dy_ext0 * dy_ext0 - dz_ext0 * dz_ext0 - dw_ext0 * dw_ext0;
+            var attn_ext0 = 2 - dx_ext0 * dx_ext0 - dy_ext0 * dy_ext0 - dz_ext0 * dz_ext0 - dw_ext0 * dw_ext0;
             if (attn_ext0 > 0)
             {
                 attn_ext0 *= attn_ext0;
@@ -2550,7 +2556,7 @@ namespace Endeavour
             }
 
             //Second extra vertex
-            double attn_ext1 = 2 - dx_ext1 * dx_ext1 - dy_ext1 * dy_ext1 - dz_ext1 * dz_ext1 - dw_ext1 * dw_ext1;
+            var attn_ext1 = 2 - dx_ext1 * dx_ext1 - dy_ext1 * dy_ext1 - dz_ext1 * dz_ext1 - dw_ext1 * dw_ext1;
             if (attn_ext1 > 0)
             {
                 attn_ext1 *= attn_ext1;
@@ -2558,7 +2564,7 @@ namespace Endeavour
             }
 
             //Third extra vertex
-            double attn_ext2 = 2 - dx_ext2 * dx_ext2 - dy_ext2 * dy_ext2 - dz_ext2 * dz_ext2 - dw_ext2 * dw_ext2;
+            var attn_ext2 = 2 - dx_ext2 * dx_ext2 - dy_ext2 * dy_ext2 - dz_ext2 * dz_ext2 - dw_ext2 * dw_ext2;
             if (attn_ext2 > 0)
             {
                 attn_ext2 *= attn_ext2;
@@ -2570,7 +2576,7 @@ namespace Endeavour
 
         private double extrapolate(int xsb, int ysb, double dx, double dy)
         {
-            int index = perm[(perm[xsb & 0xFF] + ysb) & 0xFF] & 0x0E;
+            var index = perm[(perm[xsb & 0xFF] + ysb) & 0xFF] & 0x0E;
             return gradients2D[index] * dx
                 + gradients2D[index + 1] * dy;
         }
@@ -2585,7 +2591,7 @@ namespace Endeavour
 
         private double extrapolate(int xsb, int ysb, int zsb, int wsb, double dx, double dy, double dz, double dw)
         {
-            int index = perm[(perm[(perm[(perm[xsb & 0xFF] + ysb) & 0xFF] + zsb) & 0xFF] + wsb) & 0xFF] & 0xFC;
+            var index = perm[(perm[(perm[(perm[xsb & 0xFF] + ysb) & 0xFF] + zsb) & 0xFF] + wsb) & 0xFF] & 0xFC;
             return gradients4D[index] * dx
                 + gradients4D[index + 1] * dy
                 + gradients4D[index + 2] * dz
@@ -2594,7 +2600,7 @@ namespace Endeavour
 
         private static int fastFloor(double x)
         {
-            int xi = (int)x;
+            var xi = (int)x;
             return x < xi ? xi - 1 : xi;
         }
     }

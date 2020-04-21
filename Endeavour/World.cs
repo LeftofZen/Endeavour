@@ -18,7 +18,6 @@ namespace Endeavour
 		float hunger = 0f;
 		float thirst = 0f;
 		float tiredness = 0f;
-
 	}
 
 	class WorldTile
@@ -56,16 +55,13 @@ namespace Endeavour
 		public static WorldTile Water { get; private set; }
 		public static WorldTile WorldBorder { get; private set; }
 
-
 	}
-
-
 
 	class World
 	{
 		public static List<WorldTile> GetNeighbours(WorldTile[,] grid, Point point, bool diagonals = true)
 		{
-			List<WorldTile> neighbours = new List<WorldTile>();
+			var neighbours = new List<WorldTile>();
 
 			neighbours.Add(grid[point.X - 1, point.Y]);
 			neighbours.Add(grid[point.X + 1, point.Y]);
@@ -85,7 +81,7 @@ namespace Endeavour
 
 		public static List<Point> GetNeighbours(Point point, bool diagonals = true)
 		{
-			List<Point> neighbours = new List<Point>();
+			var neighbours = new List<Point>();
 
 			neighbours.Add(new Point(point.X - 1, point.Y));
 			neighbours.Add(new Point(point.X + 1, point.Y));
@@ -104,7 +100,7 @@ namespace Endeavour
 		}
 
 		//Dictionary<Color, TileContent> mMapDefinition; // maps colours to the meaning of that colour
-		Dictionary<String, Texture2D> mTextureAtlas;
+		Dictionary<string, Texture2D> mTextureAtlas;
 		Texture2D mPixel;
 		//Texture2D mInputImage;
 		RenderTarget2D mMap;
@@ -125,7 +121,7 @@ namespace Endeavour
 		{
 			if (inputState.HasMouseMoved())
 			{
-				Point mp = inputState.mCurrentMouseState.Position;
+				var mp = inputState.mCurrentMouseState.Position;
 
 				if (new Rectangle(0, 0, mWorldSizeX * mGridSize, mWorldSizeY * mGridSize).Contains(mp))
 				{
@@ -138,9 +134,9 @@ namespace Endeavour
 
 		}
 
-		public void LoadContent(GraphicsDevice graphicsDevice, Dictionary<String, Texture2D> textureAtlas)
+		public void LoadContent(GraphicsDevice graphicsDevice, Dictionary<string, Texture2D> textureAtlas)
 		{
-			Dictionary<Color, WorldTile> TileLookup = new Dictionary<Color, WorldTile>
+			var TileLookup = new Dictionary<Color, WorldTile>
 			{
 				{ Color.White, WorldTile.DEFAULT },
 				{ new Color(136, 0, 21), WorldTile.Road },
@@ -161,33 +157,38 @@ namespace Endeavour
 			mPixel = new Texture2D(mGraphicsDevice, mGridSize, mGridSize);
 
 			// convert input texture into our useful 2d array
-			Texture2D inputImage = mTextureAtlas["test_village"];
+			var inputImage = mTextureAtlas["test_village"];
 
 			mWorldSizeX = inputImage.Width;
 			mWorldSizeY = inputImage.Height;
 			mWorld = new WorldTile[mWorldSizeX, mWorldSizeY];
 
-			Color[] colors1D = new Color[mWorldSizeX * mWorldSizeY];
+			var colors1D = new Color[mWorldSizeX * mWorldSizeY];
 			inputImage.GetData<Color>(colors1D);
-			for (int y = 0; y < mWorldSizeY; y++)
+			for (var y = 0; y < mWorldSizeY; y++)
 			{
-				for (int x = 0; x < mWorldSizeX; x++)
+				for (var x = 0; x < mWorldSizeX; x++)
 				{
-					Color c = colors1D[x + y * mWorldSizeX];
+					var c = colors1D[x + y * mWorldSizeX];
 
 					if (TileLookup.ContainsKey(c))
 					{
 						mWorld[x, y] = TileLookup[c];
 					}
 					else
+					{
 						mWorld[x, y] = WorldTile.DEFAULT;
+					}
 				}
 			}
 
 			// populate the texture with white
-			List<Color> colorList = new List<Color>();
-			for (int i = 0; i < mGridSize * mGridSize; ++i)
+			var colorList = new List<Color>();
+			for (var i = 0; i < mGridSize * mGridSize; ++i)
+			{
 				colorList.Add(Color.White);
+			}
+
 			mPixel.SetData(colorList.ToArray());
 
 			mWinWidth = mGraphicsDevice.PresentationParameters.BackBufferWidth;
@@ -208,13 +209,13 @@ namespace Endeavour
 		{
 			// When D = 1 and D2 = 1, this is called the Chebyshev distance.
 			// When D = 1 and D2 = sqrt(2), this is called the octile distance.
-			float D = 1;
-			float D2 = 1;
+			const float D = 1;
+			const float D2 = 1;
 
 
-			float dx = (float)Math.Abs(next.X - end.X);
-			float dy = (float)Math.Abs(next.Y - end.Y);
-			float h = D * (dx + dy) + (D2 - 2 * D) * Math.Min(dx, dy);
+			var dx = (float)Math.Abs(next.X - end.X);
+			var dy = (float)Math.Abs(next.Y - end.Y);
+			var h = D * (dx + dy) + (D2 - 2 * D) * Math.Min(dx, dy);
 
 			return h;
 		}
@@ -222,43 +223,47 @@ namespace Endeavour
 		// http://www.redblobgames.com/pathfinding/a-star/introduction.html
 		public static List<Point> GetPath_AStar(WorldTile[,] grid, Point begin, Point end)
 		{
-			List<Point> path = new List<Point>();
+			var path = new List<Point>();
 
-			SimplePriorityQueue<Point> frontier = new SimplePriorityQueue<Point>();
-			Dictionary<Point, float> costSoFar = new Dictionary<Point, float>();
-			Dictionary<Point, Point> predecessors = new Dictionary<Point, Point>();
+			var frontier = new SimplePriorityQueue<Point>();
+			var costSoFar = new Dictionary<Point, float>();
+			var predecessors = new Dictionary<Point, Point>();
 
 			frontier.Enqueue(begin, 0f);
 			predecessors[begin] = begin;
 			costSoFar[begin] = 0f;
 
-			bool pathFound = false;
+			var pathFound = false;
 
 			while (frontier.Count != 0)
 			{
-				Point curr = frontier.Dequeue();
+				var curr = frontier.Dequeue();
 				if (curr == end)
 				{
 					pathFound = true;
 					break;
 				}
 
-				foreach (Point next in GetNeighbours(curr))
+				foreach (var next in GetNeighbours(curr))
 				{
 					// tile is outside the world
 					if (next.X < 0 || next.X > grid.GetLength(0) || next.Y < 0 || next.Y > grid.GetLength(1))
+					{
 						continue;
+					}
 
 					if (!grid[next.X, next.Y].mIsWalkable)
+					{
 						continue;
+					}
 
-					float distance = (next.X - curr.X == 0 || next.Y - curr.Y == 0) ? 1f : (float)Math.Sqrt(2);
+					var distance = (next.X - curr.X == 0 || next.Y - curr.Y == 0) ? 1f : (float)Math.Sqrt(2);
 
-					float newCost = costSoFar[curr] + distance + grid[next.X, next.Y].mTravelCost;
+					var newCost = costSoFar[curr] + distance + grid[next.X, next.Y].mTravelCost;
 					if (!costSoFar.ContainsKey(next) || newCost < costSoFar[next])
 					{
 						costSoFar[next] = newCost;
-						float priority = newCost + heuristic(end, next);
+						var priority = newCost + heuristic(end, next);
 						frontier.Enqueue(next, priority);
 						predecessors[next] = curr;
 					}
@@ -270,7 +275,7 @@ namespace Endeavour
 			if (pathFound)
 			{
 				path.Add(end);
-				Point temp = end;
+				var temp = end;
 				while (temp != begin)
 				{
 
@@ -287,9 +292,9 @@ namespace Endeavour
 		public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
 		{
 			// world
-			for (int y = 0; y < mWorldSizeY; y++)
+			for (var y = 0; y < mWorldSizeY; y++)
 			{
-				for (int x = 0; x < mWorldSizeX; x++)
+				for (var x = 0; x < mWorldSizeX; x++)
 				{
 					spriteBatch.Draw(
 						mPixel,
@@ -306,14 +311,17 @@ namespace Endeavour
 			}
 
 			// path
-			float pathPixelScale = 2f;
+			const float pathPixelScale = 2f;
 			Vector2? previousCentreOfGrid = null;
-			foreach (Point p in mPath)
+			foreach (var p in mPath)
 			{
-				Vector2 centreOfCurrentGrid = new Vector2(p.X * mGridSize, p.Y * mGridSize) + new Vector2(mGridSize / 2);
+				var centreOfCurrentGrid = new Vector2(p.X * mGridSize, p.Y * mGridSize) + new Vector2(mGridSize / 2);
 
 				if (previousCentreOfGrid != null)
+				{
 					DrawLine(spriteBatch, centreOfCurrentGrid, previousCentreOfGrid.Value);
+				}
+
 				previousCentreOfGrid = centreOfCurrentGrid;
 
 				spriteBatch.Draw(
@@ -332,9 +340,9 @@ namespace Endeavour
 
 			void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end)
 			{
-				Vector2 edge = end - start;
+				var edge = end - start;
 				// calculate angle to rotate line
-				float angle =
+				var angle =
 					(float)Math.Atan2(edge.Y, edge.X);
 
 

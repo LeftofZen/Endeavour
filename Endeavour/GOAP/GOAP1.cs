@@ -4,21 +4,21 @@ namespace ConsoleApp1.GOAP
 {
 	delegate void DepositWoodDel(WorldObject agent, WorldObject target);
 
-	class GOAP1
+	static class GOAP1
 	{
 		static void GoapMain(string[] args)
 		{
 			// setup objects
-			WorldObject woWood = new WorldObject("wood");
-			WorldObject woAxe = new WorldObject("axe");
-			WorldObject woBed = new WorldObject("bed");
-			Agent woWoodDeposit = new Agent("wood deposit");
+			var woWood = new WorldObject("wood");
+			var woAxe = new WorldObject("axe");
+			var woBed = new WorldObject("bed");
+			var woWoodDeposit = new Agent("wood deposit");
 
-			Agent Alice = new Agent("Alice");
+			var Alice = new Agent("Alice");
 			// set up actions
 
 			// chop wood requires an axe, no wood
-			GOAPAction ChopWood = new GOAPAction("Chop wood", 3);
+			var ChopWood = new GOAPAction("Chop wood", 3);
 			var reqAxe = new GOAPState<WorldObject>("requires Axe", woAxe,
 				(WorldObject wo, Agent a1) => { return a1.HasWorldObject(wo); });
 			var reqNoWood = new GOAPState<WorldObject>("requires no Wood", woWood,
@@ -27,7 +27,7 @@ namespace ConsoleApp1.GOAP
 			ChopWood.AddPrerequisite(reqNoWood);
 
 			var giveWood = new GOAPState<WorldObject>("give wood to agent", woWood,
-				(WorldObject wo, Agent a1) => { a1.AddObjectToInventory(wo); return true; });
+				(WorldObject wo, Agent a1) => { _ = a1.AddObjectToInventory(wo); return true; });
 
 			ChopWood.AddEffect(giveWood);
 
@@ -35,7 +35,7 @@ namespace ConsoleApp1.GOAP
 
 			// deposit wood
 
-			GOAPAction DepositWood = new GOAPAction("Deposit wood", 2);
+			var DepositWood = new GOAPAction("Deposit wood", 2);
 			var reqWood = new GOAPState<WorldObject>("requires Wood", woWood,
 				(WorldObject wo, Agent a1) => { return a1.HasWorldObject(wo); });
 			DepositWood.AddPrerequisite(reqWood);
@@ -43,8 +43,8 @@ namespace ConsoleApp1.GOAP
 			var depWood = new GOAPState<WorldObject, Agent>("give wood to depo", woWood, woWoodDeposit,
 				(WorldObject wo, Agent a1, Agent a2) =>
 				{
-					a2.RemoveObjectFromInventory(wo);
-					a1.AddObjectToInventory(wo);
+					_ = a2.RemoveObjectFromInventory(wo);
+					_ = a1.AddObjectToInventory(wo);
 					return true;
 				});
 
@@ -52,7 +52,7 @@ namespace ConsoleApp1.GOAP
 
 			// done with deposit wood
 
-			GOAPAction Sleep = new GOAPAction("Sleep", -20);
+			var Sleep = new GOAPAction("Sleep", -20);
 			
 			var reqSleep = new GOAPState("requires sleep",
 				(Agent a1) => { return a1.mEnergy < 3; });
@@ -81,7 +81,7 @@ namespace ConsoleApp1.GOAP
 			}
 
 
-			Console.ReadLine();
+			_ = Console.ReadLine();
 		}
 	}
 }

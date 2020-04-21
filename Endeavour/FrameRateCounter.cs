@@ -20,13 +20,14 @@ namespace Endeavour
 			: base(game)
 		{
 			content = new ContentManager(game.Services);
+			content.RootDirectory = "Content";
 		}
 
 
 		protected override void LoadContent()
 		{
 			spriteBatch = new SpriteBatch(GraphicsDevice);
-			spriteFont = content.Load<SpriteFont>("Content\\Fonts\\arial");
+			spriteFont = content.Load<SpriteFont>("Fonts\\arial");
 		}
 
 
@@ -53,7 +54,7 @@ namespace Endeavour
 		{
 			frameCounter++;
 
-			string fps = string.Format("fps: {0}", frameRate);
+			var fps = string.Format("fps: {0}", frameRate);
 
 			spriteBatch.Begin();
 

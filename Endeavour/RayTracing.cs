@@ -103,17 +103,17 @@ namespace ConsoleApp1
 				double py = r.Origin.Y;
 				double pz = r.Origin.Z;
 
-				double vx = (r.Origin.X + r.Direction.X * 1000) - px;
-				double vy = (r.Origin.Y + r.Direction.Y * 1000) - py;
-				double vz = (r.Origin.Z + r.Direction.Z * 1000) - pz;
+				var vx = (r.Origin.X + r.Direction.X * 1000) - px;
+				var vy = (r.Origin.Y + r.Direction.Y * 1000) - py;
+				var vz = (r.Origin.Z + r.Direction.Z * 1000) - pz;
 
-				double A = vx * vx + vy * vy + vz * vz;
-				double B = 2.0 * (px * vx + py * vy + pz * vz - vx * cx - vy * cy - vz * cz);
-				double C = px * px - 2 * px * cx + cx * cx + py * py - 2 * py * cy + cy * cy +
+				var A = vx * vx + vy * vy + vz * vz;
+				var B = 2.0 * (px * vx + py * vy + pz * vz - vx * cx - vy * cy - vz * cz);
+				var C = px * px - 2 * px * cx + cx * cx + py * py - 2 * py * cy + cy * cy +
 						   pz * pz - 2 * pz * cz + cz * cz - mRadius * mRadius;
 
 				// discriminant
-				double D = B * B - 4 * A * C;
+				var D = B * B - 4 * A * C;
 
 				if (D < 0)
 				{
@@ -121,9 +121,9 @@ namespace ConsoleApp1
 					return false;
 				}
 
-				double t1 = (-B - Math.Sqrt(D)) / (2.0 * A);
+				var t1 = (-B - Math.Sqrt(D)) / (2.0 * A);
 
-				Vector3f solution1 = new Vector3f(px * (1 - t1) + t1 * vx,
+				var solution1 = new Vector3f(px * (1 - t1) + t1 * vx,
 												 py * (1 - t1) + t1 * vy,
 												 pz * (1 - t1) + t1 * vz);
 				if (D == 0)
@@ -132,8 +132,8 @@ namespace ConsoleApp1
 					return true;
 				}
 
-				double t2 = (-B + Math.Sqrt(D)) / (2.0 * A);
-				Vector3f solution2 = new Vector3f(px * (1 - t2) + t2 * vx,
+				var t2 = (-B + Math.Sqrt(D)) / (2.0 * A);
+				var solution2 = new Vector3f(px * (1 - t2) + t2 * vx,
 												 py * (1 - t2) + t2 * vy,
 												 pz * (1 - t2) + t2 * vz);
 
@@ -176,21 +176,37 @@ namespace ConsoleApp1
 				//t0 = 0;
 
 				if ((txmin > tymax) || (tymin > txmax))
+				{
 					return false;
+				}
+
 				if (tymin > txmin)
+				{
 					txmin = tymin;
+				}
+
 				if (tymax < txmax)
+				{
 					txmax = tymax;
+				}
 
 				tzmin = (bounds[r.sign[2]].Z - r.Origin.Z) * r.InvDirection.Z;
 				tzmax = (bounds[1 - r.sign[2]].Z - r.Origin.Z) * r.InvDirection.Z;
 
 				if ((txmin > tzmax) || (tzmin > txmax))
+				{
 					return false;
+				}
+
 				if (tzmin > txmin)
+				{
 					txmin = tzmin;
+				}
+
 				if (tzmax < txmax)
+				{
 					txmax = tzmax;
+				}
 
 				// tMin is the closest point of intersection, aka distance to the object
 				//t0 = txmin;
@@ -206,27 +222,27 @@ namespace ConsoleApp1
 		public Bitmap Trace()
 		{
 			// single pass (no bounce) raytrace
-			Camera cam = new Camera(new Vector3f(0, 0, 0), new Vector3f(0, 0, -10));
+			var cam = new Camera(new Vector3f(0, 0, 0), new Vector3f(0, 0, -10));
 
-			RectangularPrism rp = new RectangularPrism(
+			var rp = new RectangularPrism(
 				new Vector3f(0, 0, -100),
 				new Vector3f(-10, -10, -10),
 				new Vector3f(10, 10, 10));
 
-			Sphere sp = new Sphere(new Vector3f(0, 0, -20), 5f);
+			var sp = new Sphere(new Vector3f(0, 0, -20), 5f);
 
-			List<IGeometry> sceneObjects = new List<IGeometry>();
+			var sceneObjects = new List<IGeometry>();
 			sceneObjects.Add(sp);
 
-			Bitmap im = new Bitmap(256, 256);
+			var im = new Bitmap(256, 256);
 
 			// for each pixel
-			for (int y = 0; y < 256; ++y)
+			for (var y = 0; y < 256; ++y)
 			{
-				for (int x = 0; x < 256; ++x)
+				for (var x = 0; x < 256; ++x)
 				{
-					Vector3f rayOrigin = new Vector3f(cam.Position.X + x - 128, cam.Position.Y - 128, cam.Position.Z);
-					Ray r = new Ray(rayOrigin, cam.Direction);
+					var rayOrigin = new Vector3f(cam.Position.X + x - 128, cam.Position.Y - 128, cam.Position.Z);
+					var r = new Ray(rayOrigin, cam.Direction);
 
 					// sort objects on depth here? then we don't need to iterate over them all
 
@@ -234,10 +250,9 @@ namespace ConsoleApp1
 
 					// get first object the ray intersects with
 					//IGeometry closestObject;
-					foreach (IGeometry geom in sceneObjects)
+					foreach (var geom in sceneObjects)
 					{
-						Vector3f[] results;
-						if (geom.Intersects(r, out results))
+						if (geom.Intersects(r, out var results))
 						{
 							im.SetPixel(x, y, Color.White);
 							//if (o.distance < closestObject.distance)
@@ -261,8 +276,8 @@ namespace ConsoleApp1
 
 		public static void RTMain(string[] args)
 		{
-			RayTracing rt = new RayTracing();
-			Bitmap bmp = rt.Trace();
+			var rt = new RayTracing();
+			var bmp = rt.Trace();
 			bmp.Save("raytrace_test.png", ImageFormat.Png);
 		}
 	}

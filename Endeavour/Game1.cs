@@ -17,8 +17,8 @@ namespace Endeavour
 
 		Dictionary<string, Texture2D> mTextureAtlas;
 
-		//WorldGen mWorldGen;
-		//World mWorld;
+		WorldGen mWorldGen;
+		World mWorld;
 
 		Render mRender;
 
@@ -38,10 +38,7 @@ namespace Endeavour
 
 			this.IsMouseVisible = true;
 
-
 			Content.RootDirectory = "Content";
-
-			// enable this when we upgrade to monogame 3.6+
 			Components.Add(new FrameRateCounter(this));
 
 		}
@@ -55,8 +52,8 @@ namespace Endeavour
 		protected override void Initialize()
 		{
 			// TODO: Add your initialization logic here
-			//mWorldGen = new WorldGen();
-			//mWorld = new World();
+			mWorldGen = new WorldGen();
+			mWorld = new World();
 
 			mRender = new Render(this);
 			mRender.Initialize(mGraphics);
@@ -82,8 +79,8 @@ namespace Endeavour
 			LoadImage("arrow");
 
 
-			//mWorld.LoadContent(GraphicsDevice, mTextureAtlas);
-			//mWorldGen.LoadContent(GraphicsDevice, mTextureAtlas);
+			mWorld.LoadContent(GraphicsDevice, mTextureAtlas);
+			mWorldGen.LoadContent(GraphicsDevice, mTextureAtlas);
 			mRender.LoadContent(mTextureAtlas);
 
 		}
@@ -107,8 +104,6 @@ namespace Endeavour
 			// Read the current state of the keyboard and gamepad and store it
 			mInputState.Update(gameTime);
 
-
-
 			if (mInputState.mCurrentGamePadState.Buttons.Back == ButtonState.Pressed
 				|| mInputState.mCurrentKeyboardState.IsKeyDown(Keys.Escape))
 			{
@@ -126,10 +121,10 @@ namespace Endeavour
 			// Process mouse
 			{ }
 
-			//mWorldGen.ProcessInput();
+			mWorldGen.ProcessInput(gameTime);
 			//mWorld.ProcessInput(mInputState);
-			mRender.Update(gameTime);
-			mRender.ProcessInput(mInputState);
+			//mRender.Update(gameTime);
+			//mRender.ProcessInput(mInputState);
 
 			if (!mInputState.mCurrentKeyboardState.IsKeyDown(Keys.Space) && mInputState.mPreviousKeyboardState.IsKeyDown(Keys.Space))
 			{
@@ -153,9 +148,9 @@ namespace Endeavour
 			mSpriteBatch.Begin(
 				SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, null);
 
-			//mWorldGen.Draw(gameTime, mSpriteBatch);
+			mWorldGen.Draw(gameTime, mSpriteBatch);
 			//mWorld.Draw(gameTime, mSpriteBatch);
-			mRender.Draw(gameTime);
+			//mRender.Draw(gameTime);
 
 			mSpriteBatch.End();
 

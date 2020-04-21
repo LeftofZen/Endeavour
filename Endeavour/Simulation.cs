@@ -25,31 +25,35 @@ namespace ConsoleApp1
 
 		public static void SimMain(string[] args)
 		{
-			List<Agent> mAgents = new List<Agent>();
-			int mAgentCount = 1000;
+			var mAgents = new List<Agent>();
+			const int mAgentCount = 1000;
 
-			for (int i = 0; i < mAgentCount; ++i)
+			for (var i = 0; i < mAgentCount; ++i)
 			{
 				mAgents.Add(new Agent());
 			}
 			
-			int count = 0;
+			var count = 0;
 			while (count++ < 100)
 			{
-				DateTime dt = DateTime.Now;
+				var dt = DateTime.Now;
 
-				foreach (Agent a in mAgents)
+				foreach (var a in mAgents)
+				{
 					a.Update();
+				}
 
-				foreach (Agent a in mAgents)
+				foreach (var a in mAgents)
+				{
 					a.Render();
+				}
 
-				TimeSpan diff = DateTime.Now - dt;
+				var diff = DateTime.Now - dt;
 				Console.WriteLine("Update {0}, Time={1}", count, diff);
 
 			}
 
-			Console.ReadLine();
+			_ = Console.ReadLine();
 		}
 
 	}

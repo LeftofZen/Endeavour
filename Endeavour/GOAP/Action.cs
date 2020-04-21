@@ -42,12 +42,14 @@ namespace ConsoleApp1.GOAP
 
 		public bool AreAllPrerequisitesSatisfied()
 		{
-			bool result = true;
+			var result = true;
 			foreach (var v in mPrerequisites)
 			{
 				// every prere needs an agent
 				if (v.GetAgent() == null)
+				{
 					v.SetAgent(mAgent);
+				}
 
 				result &= v.Evaluate();
 			}

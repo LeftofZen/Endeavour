@@ -140,12 +140,14 @@ namespace Priority_Queue
             if(node.QueueIndex > 1)
             {
                 parent = node.QueueIndex >> 1;
-                T parentNode = _nodes[parent];
+                var parentNode = _nodes[parent];
                 if(HasHigherPriority(parentNode, node))
-                    return;
+				{
+					return;
+				}
 
-                //Node has lower priority value, so move parent down the heap to make room
-                _nodes[node.QueueIndex] = parentNode;
+				//Node has lower priority value, so move parent down the heap to make room
+				_nodes[node.QueueIndex] = parentNode;
                 parentNode.QueueIndex = node.QueueIndex;
 
                 node.QueueIndex = parent;
@@ -157,12 +159,14 @@ namespace Priority_Queue
             while(parent > 1)
             {
                 parent >>= 1;
-                T parentNode = _nodes[parent];
+                var parentNode = _nodes[parent];
                 if(HasHigherPriority(parentNode, node))
-                    break;
+				{
+					break;
+				}
 
-                //Node has lower priority value, so move parent down the heap to make room
-                _nodes[node.QueueIndex] = parentNode;
+				//Node has lower priority value, so move parent down the heap to make room
+				_nodes[node.QueueIndex] = parentNode;
                 parentNode.QueueIndex = node.QueueIndex;
 
                 node.QueueIndex = parent;
@@ -176,8 +180,8 @@ namespace Priority_Queue
         private void CascadeDown(T node)
         {
             //aka Heapify-down
-            int finalQueueIndex = node.QueueIndex;
-            int childLeftIndex = 2 * finalQueueIndex;
+            var finalQueueIndex = node.QueueIndex;
+            var childLeftIndex = 2 * finalQueueIndex;
 
             // If leaf node, we're done
             if(childLeftIndex > _numNodes)
@@ -186,8 +190,8 @@ namespace Priority_Queue
             }
 
             // Check if the left-child is higher-priority than the current node
-            int childRightIndex = childLeftIndex + 1;
-            T childLeft = _nodes[childLeftIndex];
+            var childRightIndex = childLeftIndex + 1;
+            var childLeft = _nodes[childLeftIndex];
             if(HasHigherPriority(childLeft, node))
             {
                 // Check if there is a right child. If not, swap and finish.
@@ -200,7 +204,7 @@ namespace Priority_Queue
                     return;
                 }
                 // Check if the left-child is higher-priority than the right-child
-                T childRight = _nodes[childRightIndex];
+                var childRight = _nodes[childRightIndex];
                 if(HasHigherPriority(childLeft, childRight))
                 {
                     // left is highest, move it up and continue
@@ -224,7 +228,7 @@ namespace Priority_Queue
             else
             {
                 // Check if the right-child is higher-priority than the current node
-                T childRight = _nodes[childRightIndex];
+                var childRight = _nodes[childRightIndex];
                 if(HasHigherPriority(childRight, node))
                 {
                     childRight.QueueIndex = finalQueueIndex;
@@ -265,7 +269,7 @@ namespace Priority_Queue
                         break;
                     }
                     // Check if the left-child is higher-priority than the right-child
-                    T childRight = _nodes[childRightIndex];
+                    var childRight = _nodes[childRightIndex];
                     if(HasHigherPriority(childLeft, childRight))
                     {
                         // left is highest, move it up and continue
@@ -291,7 +295,7 @@ namespace Priority_Queue
                 else
                 {
                     // Check if the right-child is higher-priority than the current node
-                    T childRight = _nodes[childRightIndex];
+                    var childRight = _nodes[childRightIndex];
                     if(HasHigherPriority(childRight, node))
                     {
                         childRight.QueueIndex = finalQueueIndex;
@@ -345,7 +349,7 @@ namespace Priority_Queue
             }
             #endif
 
-            T returnMe = _nodes[1];
+            var returnMe = _nodes[1];
             //If the node is already the last node, we can remove it immediately
             if(_numNodes == 1)
             {
@@ -355,7 +359,7 @@ namespace Priority_Queue
             }
 
             //Swap the node with the last node
-            T formerLastNode = _nodes[_numNodes];
+            var formerLastNode = _nodes[_numNodes];
             _nodes[1] = formerLastNode;
             formerLastNode.QueueIndex = 1;
             _nodes[_numNodes] = null;
@@ -385,8 +389,8 @@ namespace Priority_Queue
             }
             #endif
 
-            T[] newArray = new T[maxNodes + 1];
-            int highestIndexToCopy = Math.Min(maxNodes, _numNodes);
+            var newArray = new T[maxNodes + 1];
+            var highestIndexToCopy = Math.Min(maxNodes, _numNodes);
             Array.Copy(_nodes, newArray, highestIndexToCopy + 1);
             _nodes = newArray;
         }
@@ -443,7 +447,7 @@ namespace Priority_Queue
         private void OnNodeUpdated(T node)
         {
             //Bubble the updated node up or down as appropriate
-            int parentIndex = node.QueueIndex >> 1;
+            var parentIndex = node.QueueIndex >> 1;
 
             if(parentIndex > 0 && HasHigherPriority(node, _nodes[parentIndex]))
             {
@@ -486,7 +490,7 @@ namespace Priority_Queue
             }
 
             //Swap the node with the last node
-            T formerLastNode = _nodes[_numNodes];
+            var formerLastNode = _nodes[_numNodes];
             _nodes[node.QueueIndex] = formerLastNode;
             formerLastNode.QueueIndex = node.QueueIndex;
             _nodes[_numNodes] = null;
@@ -518,18 +522,22 @@ namespace Priority_Queue
         /// </summary>
         public bool IsValidQueue()
         {
-            for(int i = 1; i < _nodes.Length; i++)
+            for(var i = 1; i < _nodes.Length; i++)
             {
                 if(_nodes[i] != null)
                 {
-                    int childLeftIndex = 2 * i;
+                    var childLeftIndex = 2 * i;
                     if(childLeftIndex < _nodes.Length && _nodes[childLeftIndex] != null && HasHigherPriority(_nodes[childLeftIndex], _nodes[i]))
-                        return false;
+					{
+						return false;
+					}
 
-                    int childRightIndex = childLeftIndex + 1;
+					var childRightIndex = childLeftIndex + 1;
                     if(childRightIndex < _nodes.Length && _nodes[childRightIndex] != null && HasHigherPriority(_nodes[childRightIndex], _nodes[i]))
-                        return false;
-                }
+					{
+						return false;
+					}
+				}
             }
             return true;
         }

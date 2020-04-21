@@ -71,8 +71,8 @@ namespace ConsoleApp1
 				if (mServerSocket.Connected)
 				{
 					// send an update msg
-					byte[] msg = Serialise();
-					mServerSocket.Send(msg);
+					var msg = Serialise();
+					_ = mServerSocket.Send(msg);
 				}
 
 				System.Threading.Thread.Sleep(1000);
@@ -82,23 +82,23 @@ namespace ConsoleApp1
 
 		private void OnReceive(object sender, DoWorkEventArgs e)
 		{
-			byte[] buffer = new byte[1000];
+			var buffer = new byte[1000];
 
 			while (true)
 			{
 				if (mServerSocket.Connected)
 				{
-					int bytes = mServerSocket.Receive(buffer);
+					var bytes = mServerSocket.Receive(buffer);
 					if (bytes > 0)
 					{
 						Console.WriteLine("[Client] [OnReceive] bytes={0}", bytes);
-						MemoryStream ms = new MemoryStream(buffer);
-						BinaryFormatter formatter = new BinaryFormatter();
+						var ms = new MemoryStream(buffer);
+						var formatter = new BinaryFormatter();
 
-						MsgHeader hdr = new MsgHeader();
+						var hdr = new MsgHeader();
 						hdr = (MsgHeader)formatter.Deserialize(ms);
 
-						Player player = new Player("_");
+						var player = new Player("_");
 						player = (Player)formatter.Deserialize(ms);
 						Console.WriteLine("[Client] [OnReceive] [{0}] hdr={{{1}}} player_recv={{{2}}}",
 							mPlayer, hdr, player);
@@ -114,11 +114,11 @@ namespace ConsoleApp1
 
 		byte[] Serialise()
 		{
-			BinaryFormatter formatter = new BinaryFormatter();
-			MemoryStream stream = new MemoryStream();
+			var formatter = new BinaryFormatter();
+			var stream = new MemoryStream();
 
 			// write header
-			MsgHeader hdr = new MsgHeader()
+			var hdr = new MsgHeader()
 			{
 				size = 1,
 				msgType = 2
@@ -165,11 +165,11 @@ namespace ConsoleApp1
 		{
 			lock (mSockets)
 			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				MemoryStream stream = new MemoryStream();
+				var formatter = new BinaryFormatter();
+				var stream = new MemoryStream();
 
 				// write header
-				MsgHeader hdr = new MsgHeader()
+				var hdr = new MsgHeader()
 				{
 					size = 2,
 					msgType = 3
@@ -181,11 +181,11 @@ namespace ConsoleApp1
 				formatter.Serialize(stream, hdr);
 				formatter.Serialize(stream, data);
 
-				foreach (Socket sock in mSockets)
+				foreach (var sock in mSockets)
 				{
 					if (sock != from)
 					{
-						sock.Send(stream.ToArray());
+						_ = sock.Send(stream.ToArray());
 					}
 				}				
 			}
@@ -193,25 +193,25 @@ namespace ConsoleApp1
 
 		private void OnReceive(object sender, DoWorkEventArgs e)
 		{
-			byte[] buffer = new byte[1000];
-			Queue<KeyValuePair<Socket, Player>> mMsgs = new Queue<KeyValuePair<Socket, Player>>();
+			var buffer = new byte[1000];
+			var mMsgs = new Queue<KeyValuePair<Socket, Player>>();
 			while (true)
 			{
 				lock(mSockets)
 				{
-					foreach (Socket sock in mSockets)
+					foreach (var sock in mSockets)
 					{
-						int bytes = sock.Receive(buffer);
+						var bytes = sock.Receive(buffer);
 						if (bytes > 0)
 						{
 							Console.WriteLine("[Server] [OnReceive] bytes={0}", bytes);
-							MemoryStream ms = new MemoryStream(buffer);
-							BinaryFormatter formatter = new BinaryFormatter();
+							var ms = new MemoryStream(buffer);
+							var formatter = new BinaryFormatter();
 
-							MsgHeader hdr = new MsgHeader();
+							var hdr = new MsgHeader();
 							hdr = (MsgHeader)formatter.Deserialize(ms);
 
-							Player player = new Player("_");
+							var player = new Player("_");
 							player = (Player)formatter.Deserialize(ms);
 
 							Console.WriteLine("[Server] [OnReceive] hdr={{{0}}} player={{{1}}}", hdr, player);
@@ -232,13 +232,13 @@ namespace ConsoleApp1
 
 		private void StartToListen(object sender, DoWorkEventArgs e)
 		{
-			Socket listenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			var listenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			listenerSocket.Bind(mLocalEndPoint);
 			listenerSocket.Listen(200);
 
 			while (true)
 			{
-				Socket sock = listenerSocket.Accept();
+				var sock = listenerSocket.Accept();
 				if (sock.Connected && !mSockets.Contains(sock))
 				{
 					Console.WriteLine("[Server] [StartToListen] Client={0}", sock.LocalEndPoint);
@@ -269,17 +269,17 @@ namespace ConsoleApp1
 		{
 			Console.WriteLine("---");
 
-			Server mServer = new Server();
-			Client C1 = new Client("c1");
-			Client C2 = new Client("c2");
-			Client C3 = new Client("c3");
+			var mServer = new Server();
+			var C1 = new Client("c1");
+			var C2 = new Client("c2");
+			var C3 = new Client("c3");
 
-			C1.ConnectToServer(mServer.mLocalEndPoint);
-			C2.ConnectToServer(mServer.mLocalEndPoint);
-			C3.ConnectToServer(mServer.mLocalEndPoint);
+			_ = C1.ConnectToServer(mServer.mLocalEndPoint);
+			_ = C2.ConnectToServer(mServer.mLocalEndPoint);
+			_ = C3.ConnectToServer(mServer.mLocalEndPoint);
 
 			Console.WriteLine("---");
-			Console.ReadLine();
+			_ = Console.ReadLine();
 		}
 
 		public static void TcpMain(string[] args)

@@ -29,10 +29,12 @@ namespace ConsoleApp1
 		static List<Line2D> Connect(params Point[] rest)
 		{
 			if (rest.Length < 2)
+			{
 				return new List<Line2D>();
+			}
 
-			List<Line2D> lines = new List<Line2D>(rest.Length - 1);
-			for (int i = 0; i < rest.Length - 1; ++i)
+			var lines = new List<Line2D>(rest.Length - 1);
+			for (var i = 0; i < rest.Length - 1; ++i)
 			{
 				lines.Add(new Line2D(rest[i], rest[i + 1]));
 			}
@@ -81,36 +83,38 @@ namespace ConsoleApp1
 		public void Draw(object sender, PaintEventArgs e)
 		{
 			// setup
-			Brush b1 = Brushes.White;
-			Pen p1 = new Pen(b1);
-			Pen p2 = new Pen(Color.Red);
-			Pen p3 = new Pen(Color.Orange);
-			Pen p4 = new Pen(Color.Green);
+			var b1 = Brushes.White;
+			var p1 = new Pen(b1);
+			var p2 = new Pen(Color.Red);
+			var p3 = new Pen(Color.Orange);
+			var p4 = new Pen(Color.Green);
 
 			mGraphics.Clear(Color.CornflowerBlue);
 
-			List<Line2D> intersections = new List<Line2D>();
+			var intersections = new List<Line2D>();
 
 			// draw gallery
-			foreach (Line2D l in mGalleryGeom)
+			foreach (var l in mGalleryGeom)
 			{
 				if (LinesIntersect(l, new Line2D(mPlayer, mMouse)))
+				{
 					intersections.Add(l);
+				}
 
 				mGraphics.DrawLine(p1, l.A, l.B);
 			}
 
 			intersections.Sort((lineA, lineB) =>
 			{
-				int distA = DistancePointToLine(lineA, mPlayer);
-				int distB = DistancePointToLine(lineB, mPlayer);
+				var distA = DistancePointToLine(lineA, mPlayer);
+				var distB = DistancePointToLine(lineB, mPlayer);
 
 				return distA.CompareTo(distB);
 			});
 
 
-			bool first = true;
-			foreach (Line2D l in intersections)
+			var first = true;
+			foreach (var l in intersections)
 			{
 				if (first)
 				{
@@ -125,7 +129,7 @@ namespace ConsoleApp1
 
 
 			// player
-			int playerSize = 20;
+			const int playerSize = 20;
 			mGraphics.FillEllipse(
 				b1,
 				mPlayer.X - playerSize / 2,
@@ -135,7 +139,7 @@ namespace ConsoleApp1
 
 			// mouse
 
-			foreach (Line2D l in intersections)
+			foreach (var l in intersections)
 			{
 				if (first)
 				{
@@ -165,9 +169,14 @@ namespace ConsoleApp1
 		bool LinesIntersect(Line2D l1, Line2D l2)
 		{
 			if (ccw(l1.A, l1.B, l2.A) * ccw(l1.A, l1.B, l2.B) > 0)
+			{
 				return false;
+			}
+
 			if (ccw(l2.A, l2.B, l1.A) * ccw(l2.A, l2.B, l1.B) > 0)
+			{
 				return false;
+			}
 
 			return true;
 		}
@@ -179,11 +188,17 @@ namespace ConsoleApp1
 			var t = (a * (p0.X - line.A.X) + b * (p0.Y - line.A.Y)) / (a * a + b * b);
 
 			if (t > 1)
+			{
 				return line.B;
+			}
 			else if (t < 0)
+			{
 				return line.A;
+			}
 			else
+			{
 				return new Point((line.A.X + t * a), (line.A.Y + t * b));
+			}
 		}
 
 		int DistancePointToLine(Line2D line, Point p0)

@@ -9,7 +9,7 @@ namespace Endeavour
 {
 	class Render
 	{
-		Dictionary<String, Texture2D> mTextureAtlas;
+		Dictionary<string, Texture2D> mTextureAtlas;
 		GraphicsDevice mGraphicsDevice;
 		GraphicsDeviceManager mGraphicsDeviceManager;
 
@@ -29,23 +29,22 @@ namespace Endeavour
 		VertexBuffer vb;
 		IndexBuffer ib;
 
-
 		// new code:
 		BasicEffect mEffect;
 
 		public Render(Game game) { }
 
 		public void Update(GameTime gameTime)
-		{
-
-		}
+		{ }
 
 		public void ProcessInput(InputState input)
 		{
 			var lookAtVec = mCameraPosition - mCameraLookAtVector;
 			lookAtVec.Normalize();
 			if (float.IsNaN(lookAtVec.X) || float.IsNaN(lookAtVec.Y) || float.IsNaN(lookAtVec.Z))
+			{
 				lookAtVec = Vector3.Zero;
+			}
 
 			var planarLookAtVec = lookAtVec;
 			planarLookAtVec.Z = 0;
@@ -88,11 +87,11 @@ namespace Endeavour
 			mEffect.View = Matrix.CreateLookAt(
 				mCameraPosition, mCameraLookAtVector, mCameraUpVector);
 
-			float aspectRatio =
+			var aspectRatio =
 				mGraphicsDeviceManager.PreferredBackBufferWidth / (float)mGraphicsDeviceManager.PreferredBackBufferHeight;
-			float fieldOfView = MathHelper.PiOver4;
-			float nearClipPlane = 1;
-			float farClipPlane = 2000;
+			const float fieldOfView = MathHelper.PiOver4;
+			const float nearClipPlane = 1;
+			const float farClipPlane = 2000;
 
 			mEffect.Projection = Matrix.CreatePerspectiveFieldOfView(
 				fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
@@ -103,7 +102,7 @@ namespace Endeavour
 			mGraphicsDevice.Indices = ib;
 
 			// solid render
-			RasterizerState rSolidState = new RasterizerState();
+			var rSolidState = new RasterizerState();
 			rSolidState.FillMode = FillMode.Solid;
 			rSolidState.CullMode = CullMode.CullCounterClockwiseFace;
 			mGraphicsDevice.RasterizerState = rSolidState;
@@ -114,12 +113,12 @@ namespace Endeavour
 			}
 
 			// wireframe
-			BasicEffect wf = (BasicEffect)mEffect.Clone();
+			var wf = (BasicEffect)mEffect.Clone();
 			wf.DiffuseColor = Vector3.Zero;
 			wf.AmbientLightColor = Vector3.Zero;
 			wf.EmissiveColor = Vector3.Zero;
 			wf.SpecularColor = Vector3.Zero;
-			RasterizerState rWFState = new RasterizerState();
+			var rWFState = new RasterizerState();
 			rWFState.FillMode = FillMode.WireFrame;
 			rWFState.CullMode = CullMode.CullCounterClockwiseFace;
 			mGraphicsDevice.RasterizerState = rWFState;
@@ -138,7 +137,7 @@ namespace Endeavour
 
 		VertexPositionColor[] MakeIndexedQuad(int x1, int y1, int x2, int y2)
 		{
-			int maxHeight = 10;
+			const int maxHeight = 10;
 			var verts = new VertexPositionColor[4];
 			verts[0].Position = new Vector3(x1, y1, mRandom.Next(maxHeight));
 			verts[1].Position = new Vector3(x2, y1, mRandom.Next(maxHeight));
@@ -150,18 +149,18 @@ namespace Endeavour
 
 		public void Initialize(GraphicsDeviceManager graphicsDeviceManager)
 		{
-			List<VertexPositionColor> vVerts = new List<VertexPositionColor>();
-			List<int> mIndices = new List<int>();
+			var vVerts = new List<VertexPositionColor>();
+			var mIndices = new List<int>();
 
 			mGraphicsDeviceManager = graphicsDeviceManager;
 			mGraphicsDevice = mGraphicsDeviceManager.GraphicsDevice;
-			int scale = 10;
-			int yGridSize = 50;
-			int xGridSize = 50;
+			const int scale = 10;
+			const int yGridSize = 50;
+			const int xGridSize = 50;
 
-			for (int y = 0; y < yGridSize; y++)
+			for (var y = 0; y < yGridSize; y++)
 			{
-				for (int x = 0; x < xGridSize; x++)
+				for (var x = 0; x < xGridSize; x++)
 				{
 					// verts
 					var verts = MakeIndexedQuad(
@@ -170,32 +169,32 @@ namespace Endeavour
 						(x + 1) * scale,
 						(y + 1) * scale);
 
-					// this section finds if the vert we just made exists alrready
+					// this section finds if the vert we just made exists already
 					// if it does exist we get it's index (with FindIndex) and use it
 					// if it doesn't exist we add the new vert and get its new index (which is the back of the list)
 					// also we only check matches on X and Y and ignore Z axis since the grid should remain joined along X-Y
-					int index0 = vVerts.FindIndex(a => (a.Position.X == verts[0].Position.X && a.Position.Y == verts[0].Position.Y));
+					var index0 = vVerts.FindIndex(a => (a.Position.X == verts[0].Position.X && a.Position.Y == verts[0].Position.Y));
 					if (index0 == -1)
 					{
 						index0 = vVerts.Count;
 						vVerts.Add(verts[0]);
 					}
 
-					int index1 = vVerts.FindIndex(a => (a.Position.X == verts[1].Position.X && a.Position.Y == verts[1].Position.Y));
+					var index1 = vVerts.FindIndex(a => (a.Position.X == verts[1].Position.X && a.Position.Y == verts[1].Position.Y));
 					if (index1 == -1)
 					{
 						index1 = vVerts.Count;
 						vVerts.Add(verts[1]);
 					}
 
-					int index2 = vVerts.FindIndex(a => (a.Position.X == verts[2].Position.X && a.Position.Y == verts[2].Position.Y));
+					var index2 = vVerts.FindIndex(a => (a.Position.X == verts[2].Position.X && a.Position.Y == verts[2].Position.Y));
 					if (index2 == -1)
 					{
 						index2 = vVerts.Count;
 						vVerts.Add(verts[2]);
 					}
 
-					int index3 = vVerts.FindIndex(a => (a.Position.X == verts[3].Position.X && a.Position.Y == verts[3].Position.Y));
+					var index3 = vVerts.FindIndex(a => (a.Position.X == verts[3].Position.X && a.Position.Y == verts[3].Position.Y));
 					if (index3 == -1)
 					{
 						index3 = vVerts.Count;
@@ -217,7 +216,7 @@ namespace Endeavour
 			Console.WriteLine("VertexCount={0}", mVerts.Length);
 			Console.WriteLine("IndexCount={0}", mIndices.Count);
 
-			Color[] palette = new Color[6]
+			var palette = new Color[6]
 			{
 				new Color(0, 103, 51),
 				new Color(0, 107, 51),
@@ -227,15 +226,15 @@ namespace Endeavour
 				new Color(0, 187, 51),
 			};
 
-			for (int i = 0; i < mVerts.Length; ++i)
+			for (var i = 0; i < mVerts.Length; ++i)
 			{
-				int rand = mRandom.Next(6);
+				var rand = mRandom.Next(6);
 				mVerts[i].Color = palette[rand];
 			}
 
 			// setup vb
 			vb = new VertexBuffer(mGraphicsDevice, typeof(VertexPositionColor), mVerts.Length, BufferUsage.WriteOnly);
-			vb.SetData<VertexPositionColor>(mVerts);
+			vb.SetData(mVerts);
 
 			// setup ib
 			ib = new IndexBuffer(mGraphicsDevice, typeof(int), mIndices.Count, BufferUsage.WriteOnly);
@@ -244,12 +243,10 @@ namespace Endeavour
 			// We’ll be assigning texture values later
 
 			mEffect = new BasicEffect(mGraphicsDevice);
-
 		}
 
-		public void LoadContent(Dictionary<String, Texture2D> textureAtlas)
+		public void LoadContent(Dictionary<string, Texture2D> textureAtlas)
 		{
-			// set private members
 			mTextureAtlas = textureAtlas;
 		}
 	}

@@ -28,7 +28,9 @@ namespace ConsoleApp1.GOAP
 		public void AddAction(GOAPAction a)
 		{
 			if (a.mAgent == null)
+			{
 				a.mAgent = this;
+			}
 
 			// for all preconditions and effects, set agent to this one
 
@@ -43,20 +45,26 @@ namespace ConsoleApp1.GOAP
 		public GOAPAction FindNextAction()
 		{
 			if (mActions.Count() == 0)
+			{
 				return null;
+			}
 
 			// get lowest energy, valid task
-			GOAPAction currentAction = mActions[0];
-			GOAPAction replenish = mActions[0];
+			var currentAction = mActions[0];
+			var replenish = mActions[0];
 
-			foreach (GOAPAction a in mActions)
+			foreach (var a in mActions)
 			{
 				if (a.AreAllPrerequisitesSatisfied() && a.mCost < currentAction.mCost)
 				{
 					if (a.mCost > 0)
+					{
 						currentAction = a;
+					}
 					else
+					{
 						replenish = a;
+					}
 				}
 			}
 
@@ -83,20 +91,24 @@ namespace ConsoleApp1.GOAP
 
 		public bool RunPlanner()
 		{
-			GOAPAction currentAction = FindNextAction();
+			var currentAction = FindNextAction();
 
 			// we can't find any valid actions, exit completely (in a real game we would 'idle').
 			if (currentAction == null)
+			{
 				return false;
+			}
 
 			// execute task
 			foreach (var v in currentAction.GetEffects())
 			{
 				if (v.GetAgent() == null)
+				{
 					v.SetAgent(this);
+				}
 
 				// run the effect on the owner
-				v.Evaluate();
+				_ = v.Evaluate();
 			}
 
 			mEnergy -= currentAction.mCost;

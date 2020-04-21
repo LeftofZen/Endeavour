@@ -64,7 +64,7 @@ namespace ConsoleApp1
 
             public override string ToString()
             {
-                return String.Format("[{0},{1}]", x, y);
+                return string.Format("[{0},{1}]", x, y);
             }
 
             public static bool operator ==(Point p1, Point p2)
@@ -99,29 +99,34 @@ namespace ConsoleApp1
 
         public static void PrintGridTile(Tile[,] grid)
         {
-            int gridSizeX = grid.GetLength(0);
-            int gridSizeY = grid.GetLength(1);
+            var gridSizeX = grid.GetLength(0);
+            var gridSizeY = grid.GetLength(1);
 
-            for (int y = 0; y < gridSizeY; y++)
+            for (var y = 0; y < gridSizeY; y++)
             {
-                for (int x = 0; x < gridSizeX; x++)
+                for (var x = 0; x < gridSizeX; x++)
                 {
-                    Tile t = grid[x, y];
+                    var t = grid[x, y];
 
-                    char c = ' ';
+                    var c = ' ';
 
                     if (t.isSolid)
-                        c = '\u2588';
-                    //c = 'X';
-                    //if (t.cost > 0)
-                    //c = (char)((int)t.cost + '0');
-                    else if (t.isOnPath)
-                        c = '*';
-                    else if (t.wasVisited)
-                        c = '.';
+					{
+						c = '\u2588';
+					}
+					//c = 'X';
+					//if (t.cost > 0)
+					//c = (char)((int)t.cost + '0');
+					else if (t.isOnPath)
+					{
+						c = '*';
+					}
+					else if (t.wasVisited)
+					{
+						c = '.';
+					}
 
-
-                    Console.Write(c);
+					Console.Write(c);
 
                 }
                 Console.Write('\n');
@@ -130,12 +135,12 @@ namespace ConsoleApp1
 
 		public static void ClearGrid(float[,] grid)
 		{
-			int gridSizeX = grid.GetLength(0);
-			int gridSizeY = grid.GetLength(1);
+			var gridSizeX = grid.GetLength(0);
+			var gridSizeY = grid.GetLength(1);
 
-			for (int y = 0; y < gridSizeY; y++)
+			for (var y = 0; y < gridSizeY; y++)
 			{
-				for (int x = 0; x < gridSizeX; x++)
+				for (var x = 0; x < gridSizeX; x++)
 				{
 					grid[x, y] = 0f;
 				}
