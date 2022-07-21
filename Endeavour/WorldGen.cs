@@ -180,7 +180,7 @@ namespace Endeavour
 				ballD.Normalize();
 				ballDirection = ballD;
 			}
-			var ballAcc = d.Length();
+			var ballAcc = d.Length() * 4;
 			ballVelocity += ballAcc;
 			var friction = ballVelocity * 0.02f;
 			ballVelocity -= friction;
@@ -397,36 +397,33 @@ namespace Endeavour
 						sb.Draw(mPixel, currentPosition, c);
 
 						// draw gradients
-						var tex = mTextureAtlas["arrow"];
-						if (mWorld[x, y].mGradient.X != 0)
-						{
-							sb.Draw(
-								tex,
-								currentPosition + new Vector2(mGridSize / 2), // position
-								null,
-								null,
-								new Vector2(tex.Width / 2, tex.Height / 2), //origin - set to centre of texture
-								mWorld[x, y].mGradient.Y, // rotation
-								Vector2.One, //new Vector2(mWorld[x,y].mGradient.X * 10), // scale
-								Color.LightGoldenrodYellow,
-								SpriteEffects.None,
-								0);
-						}
+						//var tex = mTextureAtlas["arrow"];
+						//if (mWorld[x, y].mGradient.X != 0)
+						//{
+						//	sb.Draw(
+						//		tex,
+						//		currentPosition + new Vector2(mGridSize / 2), // position
+						//		null,
+						//		null,
+						//		new Vector2(tex.Width / 2, tex.Height / 2), //origin - set to centre of texture
+						//		mWorld[x, y].mGradient.Y, // rotation
+						//		Vector2.One, //new Vector2(mWorld[x,y].mGradient.X * 10), // scale
+						//		Color.LightGoldenrodYellow,
+						//		SpriteEffects.None,
+						//		0);
+						//}
 					}
 
-					{
-						// draw water
-						if (mWorld[x, y].water > 0.01f)
-						{
-							//float blue = Clamp(mWorld[x, y].water, 1f);
-							var blue = (mWorld[x, y].water > 1f) ? 1f : mWorld[x, y].water;
+					// draw water
+					//if (mWorld[x, y].water > 0.01f)
+					//{
+					//	//float blue = Clamp(mWorld[x, y].water, 1f);
+					//	var blue = (mWorld[x, y].water > 1f) ? 1f : mWorld[x, y].water;
 
-							//Color c = new Color(noise, noise, noise);
-							var c = new Color(0, 0, blue, 1f);
-							//sb.Draw(mPixel, currentPosition, c);
-						}
-					}
-
+					//	//Color c = new Color(noise, noise, noise);
+					//	var c = new Color(0, 0, blue, 1f);
+					//	sb.Draw(mPixel, currentPosition, c);
+					//}
 				}
 			}
 

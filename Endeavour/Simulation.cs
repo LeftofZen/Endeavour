@@ -32,7 +32,7 @@ namespace ConsoleApp1
 			{
 				mAgents.Add(new Agent());
 			}
-			
+
 			var count = 0;
 			while (count++ < 100)
 			{

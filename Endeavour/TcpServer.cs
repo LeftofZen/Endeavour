@@ -102,7 +102,6 @@ namespace ConsoleApp1
 						player = (Player)formatter.Deserialize(ms);
 						Console.WriteLine("[Client] [OnReceive] [{0}] hdr={{{1}}} player_recv={{{2}}}",
 							mPlayer, hdr, player);
-						
 					}
 				}
 				else
@@ -187,7 +186,7 @@ namespace ConsoleApp1
 					{
 						_ = sock.Send(stream.ToArray());
 					}
-				}				
+				}
 			}
 		}
 
@@ -197,7 +196,7 @@ namespace ConsoleApp1
 			var mMsgs = new Queue<KeyValuePair<Socket, Player>>();
 			while (true)
 			{
-				lock(mSockets)
+				lock (mSockets)
 				{
 					foreach (var sock in mSockets)
 					{
@@ -257,9 +256,8 @@ namespace ConsoleApp1
 		public IPEndPoint mLocalEndPoint;
 	}
 
-	class TcpServer
+	class TcpServerProgram
 	{
-
 		public static void Sleep(int ms)
 		{
 			System.Threading.Thread.Sleep(ms);
