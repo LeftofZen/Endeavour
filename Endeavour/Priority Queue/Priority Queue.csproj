@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Priority_Queue</RootNamespace>
     <AssemblyName>Priority Queue</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <CustomConstants Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">NET_VERSION_4_5</CustomConstants>
     <DefineConstants>$(DefineConstants);$(CustomConstants)</DefineConstants>
